@@ -6,6 +6,8 @@
 
 기획안·기술 설계·UX 자료는 [docs/README.md](docs/README.md)에 모았습니다. [Figma 디자인 작업 파일](https://www.figma.com/design/Z9Q0pOhlydm2IBQnzg1sJw/26-%EC%96%B4%EB%8F%84-ai-%EA%B3%B5%EB%AA%A8%EC%A0%84?node-id=1-10)도 참고할 수 있습니다.
 
+54초 제품 홍보 영상과 제작 코드는 [video/README.md](video/README.md)에 있습니다. 앱의 실제 3D 공연장과 시야 계산 함수를 그대로 불러와 렌더링했습니다.
+
 ## 바로 실행
 
 Node.js 20.19+ 또는 22.12+를 설치한 후:

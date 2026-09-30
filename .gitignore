@@ -11,3 +11,6 @@ __pycache__/
 .DS_Store
 Thumbs.db
 innerWidth
+
+# 영상 렌더 산출물
+video/out/
