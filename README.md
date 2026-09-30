@@ -4,8 +4,7 @@
 
 ![동일 눈높이에서 C3와 D3를 비교하는 시제품 화면](screenshots/compare.png)
 
-기획안·기술 설계·UX 자료는 [docs/README.md](docs/README.md)에 모았습니다. [Figma 디자인 작업 파일](https://www.figma.com/design/Z9Q0pOhlydm2IBQnzg1sJw/26-%EC%96%B4%EB%8F%84-ai-%EA%B3%B5%EB%AA%A8%EC%A0%84?node-id=1-10)도 참고할 수 있습니다.
-
+기획안·기술 설계·UX 자료는 [docs/README.md](docs/README.md)에 모았습니다.
 ## 바로 실행
 
 Node.js 20.19+ 또는 22.12+를 설치한 후:
