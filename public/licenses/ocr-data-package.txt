@@ -1,0 +1,5 @@
+@tesseract.js-data/eng 1.0.0
+Package metadata license: MIT
+Repository: https://github.com/naptha/tessdata
+Contributors: Balearica, jeromewu
+Underlying Tesseract language data: Apache-2.0 (see tessdata-best.txt).

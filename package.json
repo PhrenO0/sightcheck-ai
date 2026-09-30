@@ -1,0 +1,21 @@
+{
+  "name": "sightcheck-prototype",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 4173 --strictPort",
+    "build": "node scripts/prepare-ocr.mjs && vite build",
+    "preview": "vite preview --host 127.0.0.1 --port 4173 --strictPort",
+    "prepare:ocr": "node scripts/prepare-ocr.mjs",
+    "test": "node --test tests/*.test.js"
+  },
+  "dependencies": {
+    "three": "0.186.1",
+    "tesseract.js": "7.0.0"
+  },
+  "devDependencies": {
+    "vite": "8.3.1",
+    "@tesseract.js-data/eng": "1.0.0"
+  }
+}
