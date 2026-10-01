@@ -1,0 +1,222 @@
+{
+  "inputType": "rectified_plan",
+  "name": "오름 아트홀 · 도면 변환",
+  "image": {
+    "width": 1000,
+    "height": 930
+  },
+  "calibration": {
+    "stageLeft": [
+      242,
+      110
+    ],
+    "stageRight": [
+      758,
+      110
+    ],
+    "stageWidthM": 8.6,
+    "audienceSide": 1
+  },
+  "stage": {
+    "depthM": 3.6,
+    "heightM": 0.6,
+    "targetHeightM": 2.4
+  },
+  "seats": [
+    {
+      "label": "A1",
+      "xPx": 338.0,
+      "yPx": 455.0,
+      "floorM": 0.0,
+      "section": "1층",
+      "row": 0
+    },
+    {
+      "label": "A2",
+      "xPx": 419.0,
+      "yPx": 455.0,
+      "floorM": 0.0,
+      "section": "1층",
+      "row": 0
+    },
+    {
+      "label": "A3",
+      "xPx": 500.0,
+      "yPx": 455.0,
+      "floorM": 0.0,
+      "section": "1층",
+      "row": 0
+    },
+    {
+      "label": "A4",
+      "xPx": 581.0,
+      "yPx": 455.0,
+      "floorM": 0.0,
+      "section": "1층",
+      "row": 0
+    },
+    {
+      "label": "A5",
+      "xPx": 662.0,
+      "yPx": 455.0,
+      "floorM": 0.0,
+      "section": "1층",
+      "row": 0
+    },
+    {
+      "label": "B1",
+      "xPx": 338.0,
+      "yPx": 554.0,
+      "floorM": 0.24,
+      "section": "1층",
+      "row": 1
+    },
+    {
+      "label": "B2",
+      "xPx": 419.0,
+      "yPx": 554.0,
+      "floorM": 0.24,
+      "section": "1층",
+      "row": 1
+    },
+    {
+      "label": "B3",
+      "xPx": 500.0,
+      "yPx": 554.0,
+      "floorM": 0.24,
+      "section": "1층",
+      "row": 1
+    },
+    {
+      "label": "B4",
+      "xPx": 581.0,
+      "yPx": 554.0,
+      "floorM": 0.24,
+      "section": "1층",
+      "row": 1
+    },
+    {
+      "label": "B5",
+      "xPx": 662.0,
+      "yPx": 554.0,
+      "floorM": 0.24,
+      "section": "1층",
+      "row": 1
+    },
+    {
+      "label": "C1",
+      "xPx": 338.0,
+      "yPx": 653.0,
+      "floorM": 2.4,
+      "section": "2층",
+      "row": 2
+    },
+    {
+      "label": "C2",
+      "xPx": 419.0,
+      "yPx": 653.0,
+      "floorM": 2.4,
+      "section": "2층",
+      "row": 2
+    },
+    {
+      "label": "C3",
+      "xPx": 500.0,
+      "yPx": 653.0,
+      "floorM": 2.4,
+      "section": "2층",
+      "row": 2
+    },
+    {
+      "label": "C4",
+      "xPx": 581.0,
+      "yPx": 653.0,
+      "floorM": 2.4,
+      "section": "2층",
+      "row": 2
+    },
+    {
+      "label": "C5",
+      "xPx": 662.0,
+      "yPx": 653.0,
+      "floorM": 2.4,
+      "section": "2층",
+      "row": 2
+    },
+    {
+      "label": "D1",
+      "xPx": 338.0,
+      "yPx": 752.0,
+      "floorM": 3.05,
+      "section": "2층",
+      "row": 3
+    },
+    {
+      "label": "D2",
+      "xPx": 419.0,
+      "yPx": 752.0,
+      "floorM": 3.05,
+      "section": "2층",
+      "row": 3
+    },
+    {
+      "label": "D3",
+      "xPx": 500.0,
+      "yPx": 752.0,
+      "floorM": 3.05,
+      "section": "2층",
+      "row": 3
+    },
+    {
+      "label": "D4",
+      "xPx": 581.0,
+      "yPx": 752.0,
+      "floorM": 3.05,
+      "section": "2층",
+      "row": 3
+    },
+    {
+      "label": "D5",
+      "xPx": 662.0,
+      "yPx": 752.0,
+      "floorM": 3.05,
+      "section": "2층",
+      "row": 3
+    }
+  ],
+  "obstacles": [
+    {
+      "id": "rail",
+      "name": "2층 전면 난간",
+      "position": [
+        0,
+        2.9,
+        8.0575
+      ],
+      "size": [
+        8.75,
+        1,
+        0.1
+      ],
+      "layout": "all"
+    },
+    {
+      "id": "tower",
+      "name": "촬영 카메라 타워",
+      "position": [
+        -1.95,
+        1.9,
+        1.5
+      ],
+      "size": [
+        1.05,
+        2.6,
+        0.65
+      ],
+      "layout": "concert"
+    }
+  ],
+  "rightsConfirmed": true,
+  "positionsReviewed": true,
+  "measurementsReviewed": true
+}

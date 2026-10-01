@@ -2,6 +2,7 @@ import './style.css';
 import { DEFAULT_MODEL, LIMITS, LAYOUTS, getSeats, validateModel, analyzeSightline, describeSightline } from './model.js';
 import { VenueViewer } from './scene.js';
 import { recognizeSeatLabels } from './ocr.js';
+import { mountEngineStudio } from './engine-studio.js';
 
 const $ = (selector) => document.querySelector(selector);
 const escape = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
@@ -30,7 +31,9 @@ try {
   if (evidence && typeof evidence === 'object' && !Array.isArray(evidence)) photos = evidence;
 } catch { startupMessage = '저장된 자료를 읽지 못해 기본 공연장을 열었습니다.'; }
 const state = { selected:12, comparison:null, layout:'theatre', mode:'seat', eyeHeight:1.2, overlay:false, comparePick:false };
+state.selected = Math.min(state.selected, getSeats(model).length - 1);
 let viewer, floorplanSource, ocrBusy = false;
+let analysisCache;
 
 $('#app').innerHTML = `
   <header class="topbar">
@@ -41,12 +44,12 @@ $('#app').innerHTML = `
   <main>
     <div class="breadcrumb">공연 <span>/</span> 오름 아트홀 <span>/</span> 좌석 시야</div>
     <section class="event-heading" aria-label="공연 정보">
-      <div><div class="eyebrow">OREUM ART HALL · ORIGINAL MUSICAL</div><h1 id="event-title">뮤지컬 〈THE OTHER SIDE〉</h1><p><span id="venue-name">오름 아트홀</span><span class="dot">·</span>좌석 20개<span class="dot">·</span>가상 공연 · 판매하지 않는 예시 가격</p></div>
+      <div><div class="eyebrow">SIGHTCHECK · SEAT EXPERIENCE</div><h1 id="event-title">뮤지컬 〈THE OTHER SIDE〉</h1><p><span id="venue-name">오름 아트홀</span><span class="dot">·</span><span id="seat-count">좌석 20개</span><span class="dot">·</span><span id="event-status">가상 공연 · 판매하지 않는 예시 가격</span></p></div>
       <div class="event-tag">SELECT YOUR PERSPECTIVE<span>당신의 자리를 먼저 경험하세요</span></div>
     </section>
     <div class="workspace">
       <aside class="seat-panel panel" aria-labelledby="seat-title">
-        <div class="panel-top"><div><span class="step">01</span><h2 id="seat-title">좌석 선택</h2></div><span class="small-muted">전체 20석</span></div>
+        <div class="panel-top"><div><span class="step">01</span><h2 id="seat-title">좌석 선택</h2></div><span class="small-muted" id="total-seats">전체 20석</span></div>
         <div class="stage-map"><span>STAGE</span><div></div></div>
         <div id="seat-map" role="group" aria-label="가상 공연장 좌석도"></div>
         <div class="seat-legend"><span><i class="legend-seat selected"></i>선택</span><span><i class="legend-seat compared"></i>비교</span><span><i class="legend-seat risk"></i>가림 있음</span></div>
@@ -82,7 +85,7 @@ $('#app').innerHTML = `
   <div id="toast" role="status" aria-live="polite" hidden></div>
   <dialog id="method-dialog" class="modal"><div class="dialog-header"><h2>시야를 계산하는 방법</h2><button data-close="method-dialog" class="icon-button" aria-label="계산 기준 닫기">${icon('close')}</button></div><div class="dialog-body"><div class="method-visual">눈높이 → 고정 구조물 → 무대 표본</div><p>선택 좌석의 눈 위치에서 무대 전면 가상 영역(폭 ${model.stageWidth}m · 높이 2.4m)의 325개 표본으로 광선을 보냅니다. 무대보다 먼저 난간이나 카메라 타워를 만나면 해당 표본을 가림으로 계산합니다.</p><p><strong>표시되는 %는 표본 중 가리지 않은 비율입니다.</strong> 관람 만족도, 보이는 무대 면적의 정확한 비율, 실제 시야의 보증값이 아닙니다. 고정 화각 60°와 동일 눈높이로 좌석을 비교합니다.</p><p>사진 한 장으로 구조를 자동 복원하지 않습니다. 현재는 가상 공연장 치수이며 앞사람의 키·움직임, 음향, 배우 동선과 실제 연출은 제외했습니다.</p><p class="callout">실서비스 전 필요한 것: 현장 실측 → 동일 공연 배치의 대표 좌석 촬영 → 가림 오류 수정 → 운영자 검수.</p></div></dialog>
   <dialog id="admin-dialog" class="admin-modal"><div class="dialog-header"><div><div class="eyebrow">VENUE STUDIO</div><h2>공연장 관리</h2></div><button data-close="admin-dialog" class="icon-button" aria-label="공연장 관리 닫기">${icon('close')}</button></div><div class="dialog-body">
-    <div class="admin-banner">도면에서 이름을 읽고, 치수로 공간을 맞춥니다.<p>이 시제품은 4행 × 5열의 규칙 배치입니다. 임의 도면을 정확한 3D로 자동 변환하는 기능은 아닙니다.</p></div>
+    <div class="admin-banner">아래는 초기 가상 공연장의 수동 보정 도구입니다.<p>새 도면은 위 변환 API를 사용하세요. 축척 없는 그림이나 사진만으로 정확한 시야를 생성하지 않습니다.</p></div>
     <section class="admin-section"><h3>1. 좌석도에서 문자 후보 추출</h3><p>PNG·JPEG·WebP 좌석도를 올리세요. OCR은 영문과 숫자를 읽으며 이미지 처리는 이 브라우저 안에서 진행됩니다.</p><div class="upload-actions"><label class="secondary-button file-button">${icon('download')}도면 이미지 선택<input id="floorplan-file" type="file" accept="image/png,image/jpeg,image/webp"/></label><button id="sample-floorplan" class="secondary-button">예시 도면 불러오기</button><button id="run-ocr" class="dark-button" disabled>좌석 문자 인식</button></div><div id="floorplan-preview" hidden><img id="floorplan-image" alt="업로드한 좌석도"/></div><p id="ocr-status" role="status"></p><label class="field"><span>좌석 이름 (앞행부터, 왼쪽 → 오른쪽 · 20개)</span><textarea id="seat-labels" rows="4" spellcheck="false"></textarea></label><p class="small-muted">자동 인식 결과는 후보입니다. 방향·순서·누락을 직접 수정하세요. 도면의 픽셀 간격을 실제 거리로 쓰지 않습니다.</p></section>
     <section class="admin-section"><h3>2. 실측 치수 보정</h3><p>모든 길이의 단위는 m입니다. 저장하면 모델을 다시 만들고 기존 사진 대조 기록은 이전 버전으로 처리합니다.</p><div class="admin-grid" id="dimension-fields"></div><label class="field"><span>공연장 이름</span><input id="venue-input" maxlength="40"/></label><label class="field"><span>공식 예매 페이지 주소 (선택)</span><input id="ticket-url" type="url" placeholder="https://…"/></label><p class="small-muted">예매처와 연동된 재고·결제·자동 좌석 지정은 제공하지 않습니다. 주소를 등록하면 별도 페이지로 연결합니다.</p></section>
     <section class="admin-section"><h3>3. 모델 파일 관리</h3><div class="upload-actions"><button id="export-model" class="secondary-button">모델 JSON 내보내기</button><label class="secondary-button file-button">JSON 불러오기<input id="import-model" type="file" accept="application/json,.json"/></label><button id="reset-model" class="text-button">가상 모델로 복원</button></div><p class="small-muted">사진은 내보내기에 포함되지 않습니다. 자료는 현재 브라우저에만 저장되며 다른 사람과 공유되지 않습니다.</p></section>
@@ -95,7 +98,7 @@ $('#app').innerHTML = `
 viewer = new VenueViewer($('#scene'), text => {$('#scene-status').textContent = text;});
 viewer.rebuild(model, state.layout);
 
-function fingerprint() {return JSON.stringify([model.version, ...Object.keys(LIMITS).map(key => model[key]), model.labels, state.layout, state.eyeHeight]);}
+function fingerprint() {return JSON.stringify([model, state.layout, state.eyeHeight]);}
 function photoKey(id) {return `${id}:${state.layout}`;}
 function getPhoto(id) {
   const record = photos[photoKey(id)];
@@ -109,17 +112,28 @@ function photoStatus(id) {
 }
 function update() {
   const seats = getSeats(model), selected = seats[state.selected];
-  const analysis = analyzeSightline(model, selected, state.layout, state.eyeHeight);
-  const results = seats.map(seat => analyzeSightline(model, seat, state.layout, state.eyeHeight));
+  const analysisKey = fingerprint();
+  if (analysisCache?.key !== analysisKey) analysisCache = {key:analysisKey, results:seats.map(seat => analyzeSightline(model, seat, state.layout, state.eyeHeight))};
+  const results = analysisCache.results, analysis = results[state.selected];
   $('#venue-name').textContent = model.name;
+  $('#seat-count').textContent = `좌석 ${seats.length}개`; $('#total-seats').textContent = `전체 ${seats.length}석`;
+  $('#event-status').textContent = model.schemaVersion === 2 ? '도면 변환 · 외관 예시 · 현장 검수 전' : '가상 공연 · 판매하지 않는 예시 가격';
+  $('.bottom-note div').innerHTML = `${icon('cube')}하나의 공간, ${seats.length}개의 시점.`;
+  $('.demo-badge').textContent = model.schemaVersion === 2 ? '도면 변환 · 검수 전' : '가상 공연장 DEMO';
   $('.breadcrumb').innerHTML = `공연 <span>/</span> ${escape(model.name)} <span>/</span> 좌석 시야`;
   $('#event-title').textContent = state.layout === 'theatre' ? '뮤지컬 〈THE OTHER SIDE〉' : '라이브 〈AFTER HOURS〉';
-  $('#seat-map').innerHTML = [0,1,2,3].map(row => `<div class="map-row ${row === 2 ? 'balcony-start' : ''}"><span class="row-label">${row === 0 ? '1F' : row === 2 ? '2F' : ''}</span><div class="seat-row">${seats.filter(seat => seat.row === row).map(seat => `<button data-seat="${seat.id}" class="seat ${state.selected === seat.id ? 'is-selected' : ''} ${state.comparison === seat.id ? 'is-compared' : ''} ${results[seat.id].visible < 100 ? 'has-risk' : ''}" aria-label="${seat.section} ${seat.label} 좌석" aria-pressed="${state.selected === seat.id}">${escape(seat.label)}</button>`).join('')}</div></div>`).join('');
+  const seatButton = (seat,style='') => `<button data-seat="${seat.id}" style="${style}" class="seat ${state.selected === seat.id ? 'is-selected' : ''} ${state.comparison === seat.id ? 'is-compared' : ''} ${results[seat.id].visible < 100 ? 'has-risk' : ''}" aria-label="${escape(seat.section)} ${escape(seat.label)} 좌석" aria-pressed="${state.selected === seat.id}">${escape(seat.label)}</button>`;
+  if (model.schemaVersion === 2) {
+    const minX = Math.min(...seats.map(s => s.x)), maxX = Math.max(...seats.map(s => s.x)), minZ = Math.min(...seats.map(s => s.z)), maxZ = Math.max(...seats.map(s => s.z));
+    $('#seat-map').innerHTML = `<div class="spatial-seatmap" style="height:${Math.max(190, Math.min(600,(maxZ-minZ)*34+70))}px">${seats.map(s => seatButton(s,`left:${8+(s.x-minX)/Math.max(1,maxX-minX)*84}%;top:${8+(s.z-minZ)/Math.max(1,maxZ-minZ)*84}%`)).join('')}</div>`;
+    if (seats.length > 40) $('#seat-map').insertAdjacentHTML('beforeend', `<label class="field">좌석 이름으로 선택<select id="seat-jump" aria-label="좌석 이름으로 선택">${seats.map(s => `<option value="${s.id}" ${s.id === state.selected ? 'selected' : ''}>${escape(s.section)} ${escape(s.label)}</option>`).join('')}</select></label>`);
+  } else $('#seat-map').innerHTML = [0,1,2,3].map(row => `<div class="map-row ${row === 2 ? 'balcony-start' : ''}"><span class="row-label">${row === 0 ? '1F' : row === 2 ? '2F' : ''}</span><div class="seat-row">${seats.filter(seat => seat.row === row).map(seat => seatButton(seat)).join('')}</div></div>`).join('');
   $('#map-hint').textContent = state.comparePick ? '비교할 두 번째 좌석을 선택하세요.' : state.comparison != null ? 'A와 B는 같은 눈높이와 화각으로 비교합니다.' : '좌석을 눌러 그 자리에서 무대를 보세요.';
   $('#pick-compare').classList.toggle('is-active', state.comparePick);
   $('#clear-compare').hidden = state.comparison == null && !state.comparePick;
   document.querySelectorAll('[data-layout]').forEach(button => button.setAttribute('aria-pressed', button.dataset.layout === state.layout));
   $('#layout-note').textContent = state.layout === 'theatre' ? '고정 무대와 2층 전면 난간을 반영합니다.' : '무대 앞 왼쪽에 촬영 카메라 타워가 추가됩니다.';
+  if (model.schemaVersion === 2) $('#layout-note').textContent = '변환 입력에 등록한 해당 공연의 구조물을 반영합니다.';
   $('#seat-view').setAttribute('aria-pressed', state.mode === 'seat');
   $('#overview').setAttribute('aria-pressed', state.mode === 'overview');
   $('#eye-value').textContent = `${state.eyeHeight.toFixed(2)}m`;
@@ -133,7 +147,7 @@ function update() {
   if (comparing) $('#view-compare-label').textContent = `B · ${seats[state.comparison].section} ${seats[state.comparison].label}`;
   $('#scene-help').textContent = state.mode === 'overview' ? '공연장 구조 보기' : comparing ? '동일 화각 60° · 비교 시점을 함께 회전합니다' : '드래그해서 둘러보기 · 고정 화각 60°';
   $('#sightline-description').textContent = describeSightline(analysis);
-  $('#seat-detail').innerHTML = `<div class="selected-label">SELECTED SEAT</div><div class="seat-number">${escape(selected.label)}<span>${selected.section} · ${selected.row < 2 ? '플로어' : '발코니'}</span></div><div class="evidence-badge">${icon('info')}${escape(photoStatus(state.selected))}</div><div class="metric-main"><div><strong>${analysis.visible}<small>%</small></strong><span>가리지 않은 표본</span></div><div class="mini-stage">${miniGrid(analysis)}</div></div><div class="metric-grid"><div><span>무대 하단 표본</span><strong>${analysis.lowerVisible}%</strong></div><div><span>무대 전면 거리</span><strong>${analysis.distance}<small>m</small></strong></div><div><span>중앙축 각도</span><strong>${analysis.angle}<small>°</small></strong></div><div><span>시야 기준</span><strong class="metric-word">고정 구조물</strong></div></div>`;
+  $('#seat-detail').innerHTML = `<div class="selected-label">SELECTED SEAT</div><div class="seat-number">${escape(selected.label)}<span>${escape(selected.section)} · ${model.schemaVersion === 2 ? `${selected.row+1}행` : selected.row < 2 ? '플로어' : '발코니'}</span></div><div class="evidence-badge">${icon('info')}${escape(photoStatus(state.selected))}</div><div class="metric-main"><div><strong>${analysis.visible}<small>%</small></strong><span>가리지 않은 표본</span></div><div class="mini-stage">${miniGrid(analysis)}</div></div><div class="metric-grid"><div><span>무대 하단 표본</span><strong>${analysis.lowerVisible}%</strong></div><div><span>무대 전면 거리</span><strong>${analysis.distance}<small>m</small></strong></div><div><span>중앙축 각도</span><strong>${analysis.angle}<small>°</small></strong></div><div><span>시야 기준</span><strong class="metric-word">고정 구조물</strong></div></div>`;
   const candidates = seats.filter(seat => seat.section === selected.section && seat.id !== selected.id);
   candidates.sort((a,b) => results[b.id].visible - results[a.id].visible || Math.abs(a.x - model.stageOffset) - Math.abs(b.x - model.stageOffset));
   const recommended = candidates[0];
@@ -146,7 +160,7 @@ function update() {
     $('#recommendation-text').textContent = analysis.visible === 100 ? '이 모델에서는 고정 구조물의 가림이 없습니다. 거리와 중앙축 각도도 함께 살펴보세요.' : '다른 구역과 비교하거나 실제 좌석 사진을 확인하세요.';
     $('#recommended-seat').hidden = true;
   }
-  $('#seat-price').textContent = `${selected.price.toLocaleString('ko-KR')}원`;
+  $('#seat-price').textContent = model.schemaVersion === 2 ? '예매처에서 확인' : `${selected.price.toLocaleString('ko-KR')}원`;
   $('#booking-button').innerHTML = `${model.ticketUrl ? '공식 예매 페이지로 이동' : '좌석 선택 내용 보기'} ${icon('arrow')}`;
   $('#booking-note').textContent = model.ticketUrl ? '외부 예매처에서 재고와 가격을 다시 확인하세요.' : '가상 공연이라 실제 예매는 진행되지 않습니다.';
   $('#comparison-summary').hidden = !comparing;
@@ -176,6 +190,7 @@ document.addEventListener('click', event => {
   if (layoutButton && layoutButton.dataset.layout !== state.layout) {state.layout = layoutButton.dataset.layout; viewer.rebuild(model, state.layout); update();}
   const close = event.target.closest('[data-close]'); if (close) $(`#${close.dataset.close}`).close();
 });
+document.addEventListener('change', event => {if (event.target.id === 'seat-jump') chooseSeat(Number(event.target.value));});
 $('#pick-compare').onclick = () => {state.comparePick = !state.comparePick; state.mode = 'seat'; update();};
 $('#clear-compare').onclick = () => {state.comparison = null; state.comparePick = false; update();};
 $('#seat-view').onclick = () => {state.mode = 'seat'; update();};
@@ -185,10 +200,14 @@ $('#eye-height').oninput = event => {state.eyeHeight = Number(event.target.value
 $('#show-overlay').onchange = event => {state.overlay = event.target.checked; update();};
 $('#save-image').onclick = () => {if (viewer.unavailable) toast('이 브라우저에서 3D 이미지를 저장할 수 없습니다.'); else {viewer.downloadImage(); toast('가상 모델 표시를 포함한 시야 이미지를 저장합니다.');}};
 $('#open-method').onclick = () => {
-  $('#method-dialog .dialog-body p').innerHTML = `선택 좌석의 눈 위치에서 무대 전면 가상 영역(폭 ${model.stageWidth}m · 높이 2.4m)의 325개 표본으로 광선을 보냅니다. 무대보다 먼저 난간이나 카메라 타워를 만나면 해당 표본을 가림으로 계산합니다.`;
+  $('#method-dialog .dialog-body p').textContent = `선택 좌석의 눈 위치에서 무대 전면 표본 영역(폭 ${model.stageWidth}m · 높이 ${model.targetHeight ?? 2.4}m)의 325개 표본으로 광선을 보냅니다. 무대보다 먼저 입력된 가림 구조물을 만나면 해당 표본을 가림으로 계산합니다.`;
   $('#method-dialog').showModal();
 };
-$('#demo-tour').onclick = () => {state.selected = 12; state.comparison = 17; state.comparePick = false; state.mode = 'seat'; state.layout = 'theatre'; viewer.rebuild(model, state.layout); update(); toast('C3의 전면 난간과 D3의 시야를 같은 조건으로 비교합니다.');};
+$('#demo-tour').onclick = () => {
+  const seats = getSeats(model); state.selected = Math.max(0,seats.findIndex(s => s.label === 'C3'));
+  const back = seats.findIndex(s => s.label === 'D3'); state.comparison = seats.length > 1 ? (back >= 0 && back !== state.selected ? back : seats.length-1 === state.selected ? 0 : seats.length-1) : null;
+  state.comparePick = false; state.mode = 'seat'; state.layout = 'theatre'; viewer.rebuild(model, state.layout); update(); toast('선택한 두 좌석을 같은 조건으로 비교합니다.');
+};
 $('#recommended-seat').onclick = () => {state.comparison = Number($('#recommended-seat').dataset.id); state.comparePick = false; state.mode = 'seat'; update();};
 $('#booking-button').onclick = () => {
   if (model.ticketUrl) { window.open(model.ticketUrl, '_blank', 'noopener,noreferrer'); return; }
@@ -205,12 +224,18 @@ function fillAdmin() {
   $('#venue-input').value = model.name; $('#ticket-url').value = model.ticketUrl;
   $('#admin-version').textContent = `모델 v${model.version} · ${model.updatedAt}`;
   $('#admin-error').textContent = '';
+  document.querySelectorAll('[data-dimension],#seat-labels,#save-model').forEach(input => {input.disabled = model.schemaVersion === 2;});
+  if (model.schemaVersion === 2) $('#admin-error').textContent = '도면 모델의 수정은 변환 API에서 좌표·치수를 바꾼 뒤 다시 적용하세요. 아래 수동 보정은 초기 20석 모델 전용입니다.';
 }
 $('#open-admin').onclick = () => {fillAdmin(); $('#admin-dialog').showModal();};
 function commitModel(next) {
+  const previousLabel = getSeats(model)[state.selected]?.label;
   next = validateModel({...next, version:model.version + 1, updatedAt:new Date().toISOString().slice(0,10)});
   try {localStorage.setItem(MODEL_KEY, JSON.stringify(next));} catch {throw new Error('브라우저 저장 공간이 부족하거나 저장이 차단되었습니다.');}
-  model = next; viewer.rebuild(model, state.layout); update(); fillAdmin();
+  model = next;
+  const nextSeats = getSeats(model), matched = nextSeats.findIndex(seat => seat.label === previousLabel);
+  state.selected = matched >= 0 ? matched : 0; state.comparison = null; state.comparePick = false;
+  viewer.rebuild(model, state.layout); update(); fillAdmin();
 }
 $('#save-model').onclick = () => {
   try {
@@ -227,7 +252,7 @@ $('#export-model').onclick = () => {downloadJson(model, 'sightcheck-venue.json')
 $('#import-model').onchange = async event => {
   const file = event.target.files[0]; if (!file) return;
   try {
-    if (file.size > 100000) throw new Error('모델 파일은 100KB 이하만 가능합니다.');
+    if (file.size > 512000) throw new Error('모델 파일은 512KB 이하만 가능합니다.');
     commitModel(validateModel(JSON.parse(await file.text()))); toast('모델 JSON을 불러와 저장했습니다.');
   } catch(error) {$('#admin-error').textContent = `불러오기 실패: ${error.message}`;} finally {event.target.value = '';}
 };
@@ -304,4 +329,5 @@ $('#remove-photo').onclick = () => {
   try {localStorage.setItem(PHOTO_KEY,JSON.stringify(next)); photos = next; photoImage = null; showPhoto(); $('#photo-note').value = ''; $('#photo-verified').checked = false; $('#photo-record-status').textContent = '실사진 자료 없음'; update(); toast('이 좌석의 첨부 사진을 삭제했습니다.');}
   catch {$('#photo-error').textContent = '삭제 기록을 저장하지 못했습니다.';}
 };
+mountEngineStudio({fileImage, commitModel, toast});
 update(); if (startupMessage) toast(startupMessage);

@@ -246,3 +246,11 @@ textarea { resize:vertical; min-height:80px; line-height:1.7; }
   .dialog-header { padding:20px; }.dialog-body { padding:20px; }.dialog-footer { padding:16px 20px; }.admin-grid { gap:0 12px; }.dialog-footer .primary-button { font-size:12px; padding:12px; }.dialog-header h2 { font-size:18px; }
 }
 @media (prefers-reduced-motion:reduce) { * { transition:none !important; } }
+.engine-image-wrap{position:relative;margin:18px 0;background:#fff;border:1px solid #d4ddce;max-width:560px}
+.engine-image-wrap img{display:block;width:100%;height:auto;cursor:crosshair}
+.engine-image-wrap svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.engine-section select{width:100%;padding:10px;border:1px solid #c9d0c3;border-radius:6px;background:#fff;color:#253126;font:inherit}
+.engine-section .check-line{margin:12px 0}
+.spatial-seatmap{position:relative;min-width:180px;margin:16px 0}
+.spatial-seatmap .seat{position:absolute;transform:translate(-50%,-50%);width:32px;min-width:32px}
+#seat-jump{max-width:100%;padding:8px;border:1px solid #c9d0c3;background:#fff;border-radius:5px;font:inherit}

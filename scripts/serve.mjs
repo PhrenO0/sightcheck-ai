@@ -2,10 +2,12 @@ import http from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { handleApi } from '../dist/server/api.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../dist');
 const port = Number(process.env.SIGHTCHECK_PORT || 4173);
 const mime = {'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.json':'application/json','.wasm':'application/wasm','.gz':'application/gzip','.txt':'text/plain; charset=utf-8'};
 const server = http.createServer(async (req,res) => {
+  if (await handleApi(req,res)) return;
   if (!['GET','HEAD'].includes(req.method)) {res.writeHead(405); res.end(); return;}
   try {
     const pathname = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);

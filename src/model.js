@@ -26,6 +26,7 @@ export const LAYOUTS = {
   concert: { name: '라이브 · 카메라 타워', short: '라이브 무대', version: 2 },
 };
 export function validateModel(input) {
+  if (input?.schemaVersion === 2) return validateCalibratedModel(input);
   if (!input || input.schemaVersion !== 1) throw new Error('지원하는 모델 형식(schemaVersion: 1)이 아닙니다.');
   const model = structuredClone(DEFAULT_MODEL);
   for (const [key, [min, max]] of Object.entries(LIMITS)) {
@@ -49,7 +50,38 @@ export function validateModel(input) {
   model.updatedAt = typeof input.updatedAt === 'string' ? input.updatedAt.slice(0, 30) : '';
   return model;
 }
+function validateCalibratedModel(input) {
+  // Reuse the legacy name / URL checks without accepting unchecked nested metadata.
+  const base = validateModel({...DEFAULT_MODEL, name:input.name, ticketUrl:input.ticketUrl || '', version:input.version, updatedAt:input.updatedAt});
+  const finite = (value, min, max) => typeof value === 'number' && Number.isFinite(value) && value >= min && value <= max;
+  if (!finite(input.stageWidth, 2, 60) || !finite(input.stageDepth, 1, 20) || !finite(input.stageHeight, 0, 3) || !finite(input.targetHeight, 1, 8))
+    throw new Error('무대 폭·깊이·높이·표본 영역 높이를 확인하세요.');
+  if (!Array.isArray(input.seats) || input.seats.length < 1 || input.seats.length > 300) throw new Error('좌석은 1~300개여야 합니다.');
+  const labels = new Set();
+  const seats = input.seats.map(s => {
+    if (!s || typeof s.label !== 'string' || !/^[A-Z]{1,2}[0-9]{1,3}$/.test(s.label) || labels.has(s.label)) throw new Error('좌석 이름은 중복 없는 영문·숫자 조합이어야 합니다.');
+    if (!finite(s.x,-60,60) || !finite(s.z,0.75,100) || !finite(s.floor,0,15) || !Number.isInteger(s.row) || s.row < 0 || s.row > 100 || typeof s.section !== 'string' || !s.section.trim() || s.section.length > 20)
+      throw new Error('좌석 위치·바닥 높이·행 번호·구역을 확인하세요.');
+    labels.add(s.label); return {label:s.label, x:s.x, z:s.z, floor:s.floor, row:s.row, section:s.section.trim(), price:0};
+  });
+  if (!Array.isArray(input.obstacles) || input.obstacles.length > 50) throw new Error('구조물은 50개 이하만 가능합니다.');
+  const ids = new Set();
+  const obstacles = input.obstacles.map(o => {
+    if (!o || typeof o.id !== 'string' || !/^[a-zA-Z0-9_-]{1,40}$/.test(o.id) || ids.has(o.id) || typeof o.name !== 'string' || !o.name.trim() || o.name.length > 40)
+      throw new Error('구조물 ID와 이름을 확인하세요.');
+    if (!Array.isArray(o.position) || o.position.length !== 3 || !o.position.every(n => finite(n,-100,100)) || !Array.isArray(o.size) || o.size.length !== 3 || !o.size.every(n => finite(n,0.02,100)))
+      throw new Error('구조물 중심 좌표와 크기는 m 단위 숫자 3개여야 합니다.');
+    if (!['all','theatre','concert'].includes(o.layout)) throw new Error('구조물의 공연 배치를 지정하세요.');
+    ids.add(o.id); return {id:o.id, name:o.name.trim(), position:[...o.position], size:[...o.size], layout:o.layout};
+  });
+  const metresPerPixel = input.provenance?.metresPerPixel;
+  if (!finite(metresPerPixel,0.00001,3)) throw new Error('도면 축척 정보가 필요합니다.');
+  return {...base, schemaVersion:2, labels:[...labels], seats, obstacles, stageWidth:input.stageWidth, stageDepth:input.stageDepth,
+    stageHeight:input.stageHeight, targetHeight:input.targetHeight, stageOffset:0,
+    provenance:{source:'calibrated-plan', reviewStatus:'needs_site_review', metresPerPixel}};
+}
 export function getSeats(model) {
+  if (model.schemaVersion === 2) return model.seats.map((seat,index) => ({...seat, id:index, col:index}));
   return model.labels.map((label, index) => {
     const row = Math.floor(index / 5), col = index % 5;
     return {
@@ -62,6 +94,7 @@ export function getSeats(model) {
 }
 export function eyePosition(seat, eyeHeight = 1.2) { return new THREE.Vector3(seat.x, seat.floor + eyeHeight, seat.z); }
 export function getObstacles(model, layout) {
+  if (model.schemaVersion === 2) return model.obstacles.filter(o => o.layout === 'all' || o.layout === layout);
   const railZ = 5.5 + model.rowSpacing * 1.55;
   const width = model.seatSpacing * 5 + 2;
   const rail = { id: 'rail', name: '2층 전면 난간', position: [0, model.balconyHeight + model.railHeight / 2, railZ], size: [width, model.railHeight, 0.1] };
@@ -74,7 +107,7 @@ export function getTargets(model, columns = 25, rows = 13) {
   const points = [];
   for (let y = 0; y < rows; y++) for (let x = 0; x < columns; x++) {
     points.push({ x: (x / (columns - 1) - 0.5) * model.stageWidth + model.stageOffset,
-      y: 0.68 + y / (rows - 1) * 2.4, z: -0.25,
+      y: (model.stageHeight ?? 0.6) + 0.08 + y / (rows - 1) * (model.targetHeight ?? 2.4), z: -0.25,
       region: y < Math.ceil(rows / 3) ? 'lower' : 'upper', column: x, row: y });
   }
   return points;
