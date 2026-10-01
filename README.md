@@ -21,7 +21,7 @@ node scripts/serve.mjs
 
 브라우저에서 **http://127.0.0.1:4173/**를 엽니다. 이 주소는 서버를 실행한 PC에서만 접근할 수 있으며 배포된 웹사이트 주소가 아닙니다. 저장소가 비공개이면 clone에도 GitHub 인증이 필요합니다.
 
-Windows에서는 `npm run build` 후 이 폴더의 `실행.ps1`을 PowerShell로 실행하면 빌드된 앱을 로컬에서 엽니다. Node.js가 필요합니다. Codex에 포함된 Node도 자동으로 찾습니다. 실행 파일과 서버는 이 PC 안에서만 동작합니다.
+Windows에서는 `npm run build` 후 이 폴더의 `실행.ps1`을 PowerShell로 실행하면 빌드된 앱을 로컬에서 엽니다. Node.js가 필요합니다. Codex에 포함된 Node도 자동으로 찾습니다. 기본 포트가 다른 프로그램에 사용 중이면 4173~4183 중 빈 포트를 선택합니다. 실행 파일과 서버는 이 PC 안에서만 동작합니다.
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\실행.ps1

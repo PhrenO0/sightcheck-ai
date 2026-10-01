@@ -10,6 +10,18 @@ $taskUrl = 'http://127.0.0.1:' + $taskPort + '/'
 $taskReady = $false
 try { $taskHealth = Invoke-RestMethod -Uri ($taskUrl + 'api/health') -TimeoutSec 2; $taskReply = Invoke-WebRequest -Uri $taskUrl -TimeoutSec 2; $taskReady = $taskHealth.engineVersion -eq '0.2.0' -and $taskReply.Content -match '시야체크' } catch { }
 if (-not $taskReady) {
+  if (-not $env:SIGHTCHECK_PORT) {
+    $taskFreePort = $null
+    foreach ($taskCandidate in 4173..4183) {
+      $taskProbe = New-Object Net.Sockets.TcpClient
+      try { $taskProbe.Connect('127.0.0.1', $taskCandidate); $taskOccupied = $true } catch { $taskOccupied = $false } finally { $taskProbe.Dispose() }
+      if (-not $taskOccupied) { $taskFreePort = $taskCandidate; break }
+    }
+    if (-not $taskFreePort) { throw '4173~4183 포트를 사용할 수 없습니다. SIGHTCHECK_PORT로 다른 포트를 지정하세요.' }
+    $taskPort = [string]$taskFreePort
+    $taskUrl = 'http://127.0.0.1:' + $taskPort + '/'
+    $env:SIGHTCHECK_PORT = $taskPort
+  }
   Start-Process -FilePath $taskNode -ArgumentList @('"' + $taskServer + '"') -WorkingDirectory $taskRoot -WindowStyle Hidden
   for ($taskAttempt = 0; $taskAttempt -lt 20; $taskAttempt++) {
     Start-Sleep -Milliseconds 200
