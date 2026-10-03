@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VLM spike · existing SightCheck UI</title>
+  </head>
+  <body>
+    <aside style="padding:12px;background:#eef4e5;color:#182118">
+      <button id="load-spike">VLM spike 모델을 기존 화면에 적용</button>
+      <span id="spike-status" role="status">실험용: 이 origin의 기존 모델 저장값이 변경됩니다. C3를 선택해 확인하세요.</span>
+    </aside>
+    <div id="app"></div>
+    <script type="module">
+      import '../../src/main.js';
+      // Reuse the full production UI and its model-file import handler.
+      // No scene, camera, sightline, OCR or product module is replaced here.
+      const status = document.querySelector('#spike-status');
+      document.querySelector('#load-spike').onclick = async () => {
+        try {
+          const response = await fetch('./model.json');
+          if (!response.ok) throw new Error('먼저 node experiments/vlm-spike/run-spike.mjs를 실행하세요.');
+          const text = await response.text();
+          const transfer = new DataTransfer();
+          transfer.items.add(new File([text], 'vlm-spike-model.json', {type: 'application/json'}));
+          const input = document.querySelector('#import-model');
+          input.files = transfer.files;
+          await input.onchange({target: input});
+          const expected = JSON.parse(text);
+          const actual = JSON.parse(localStorage.getItem('sightcheck:model:v1'));
+          if (JSON.stringify(actual?.seats) !== JSON.stringify(expected.seats) ||
+              JSON.stringify(actual?.obstacles) !== JSON.stringify(expected.obstacles))
+            throw new Error('기존 import 경로의 모델 적용을 확인하지 못했습니다.');
+          status.textContent = '실험 모델 적용 확인: 아래는 기존 SightCheck 화면입니다. 3D 준비 상태와 C3 1인칭 시야를 직접 확인하세요.';
+        } catch (error) {status.textContent = error.message;}
+      };
+    </script>
+  </body>
+</html>

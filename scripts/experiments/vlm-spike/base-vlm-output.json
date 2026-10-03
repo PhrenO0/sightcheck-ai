@@ -1,0 +1,218 @@
+{
+    "stage": {
+        "region_px": {
+            "x_min": 242,
+            "y_min": 20,
+            "x_max": 758,
+            "y_max": 110
+        },
+        "center_px": {
+            "x": 500,
+            "y": 65
+        },
+        "certainty": "high"
+    },
+    "seats": [
+        {
+            "seat_number": "A1",
+            "center_px": {
+                "x": 338,
+                "y": 455
+            },
+            "row": "A",
+            "section": null,
+            "certainty": "high"
+        },
+        {
+            "seat_number": "A2",
+            "center_px": {
+                "x": 419,
+                "y": 455
+            },
+            "row": "A",
+            "section": null,
+            "certainty": "high"
+        },
+        {
+            "seat_number": "A3",
+            "center_px": {
+                "x": 500,
+                "y": 455
+            },
+            "row": "A",
+            "section": null,
+            "certainty": "high"
+        },
+        {
+            "seat_number": "A4",
+            "center_px": {
+                "x": 581,
+                "y": 455
+            },
+            "row": "A",
+            "section": null,
+            "certainty": "high"
+        },
+        {
+            "seat_number": "A5",
+            "center_px": {
+                "x": 662,
+                "y": 455
+            },
+            "row": "A",
+            "section": null,
+            "certainty": "high"
+        },
+        {
+            "seat_number": "B1",
+            "center_px": {
+                "x": 338,
+                "y": 554
+            },
+            "row": "B",
+            "section": null,
+            "certainty": "high"
+        },
+        {
+            "seat_number": "B2",
+            "center_px": {
+                "x": 419,
+                "y": 554
+            },
+            "row": "B",
+            "section": null,
+            "certainty": "high"
+        },
+        {
+            "seat_number": "B3",
+            "center_px": {
+                "x": 500,
+                "y": 554
+            },
+            "row": "B",
+            "section": null,
+            "certainty": "high"
+        },
+        {
+            "seat_number": "B4",
+            "center_px": {
+                "x": 581,
+                "y": 554
+            },
+            "row": "B",
+            "section": null,
+            "certainty": "high"
+        },
+        {
+            "seat_number": "B5",
+            "center_px": {
+                "x": 662,
+                "y": 554
+            },
+            "row": "B",
+            "section": null,
+            "certainty": "high"
+        },
+        {
+            "seat_number": "C1",
+            "center_px": {
+                "x": 338,
+                "y": 653
+            },
+            "row": "C",
+            "section": null,
+            "certainty": "high"
+        },
+        {
+            "seat_number": "C2",
+            "center_px": {
+                "x": 419,
+                "y": 653
+            },
+            "row": "C",
+            "section": null,
+            "certainty": "high"
+        },
+        {
+            "seat_number": "C3",
+            "center_px": {
+                "x": 500,
+                "y": 653
+            },
+            "row": "C",
+            "section": null,
+            "certainty": "high"
+        },
+        {
+            "seat_number": "C4",
+            "center_px": {
+                "x": 581,
+                "y": 653
+            },
+            "row": "C",
+            "section": null,
+            "certainty": "high"
+        },
+        {
+            "seat_number": "C5",
+            "center_px": {
+                "x": 662,
+                "y": 653
+            },
+            "row": "C",
+            "section": null,
+            "certainty": "high"
+        },
+        {
+            "seat_number": "D1",
+            "center_px": {
+                "x": 338,
+                "y": 752
+            },
+            "row": "D",
+            "section": null,
+            "certainty": "high"
+        },
+        {
+            "seat_number": "D2",
+            "center_px": {
+                "x": 419,
+                "y": 752
+            },
+            "row": "D",
+            "section": null,
+            "certainty": "high"
+        },
+        {
+            "seat_number": "D3",
+            "center_px": {
+                "x": 500,
+                "y": 752
+            },
+            "row": "D",
+            "section": null,
+            "certainty": "high"
+        },
+        {
+            "seat_number": "D4",
+            "center_px": {
+                "x": 581,
+                "y": 752
+            },
+            "row": "D",
+            "section": null,
+            "certainty": "high"
+        },
+        {
+            "seat_number": "D5",
+            "center_px": {
+                "x": 662,
+                "y": 752
+            },
+            "row": "D",
+            "section": null,
+            "certainty": "high"
+        }
+    ],
+    "obstacles": []
+}
