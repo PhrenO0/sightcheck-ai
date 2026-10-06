@@ -26,6 +26,7 @@ export const LAYOUTS = {
   concert: { name: '라이브 · 카메라 타워', short: '라이브 무대', version: 2 },
 };
 export function validateModel(input) {
+  if (input?.schemaVersion === 3) return validateVenueModel(input);
   if (input?.schemaVersion === 2) return validateCalibratedModel(input);
   if (!input || input.schemaVersion !== 1) throw new Error('지원하는 모델 형식(schemaVersion: 1)이 아닙니다.');
   const model = structuredClone(DEFAULT_MODEL);
@@ -49,6 +50,42 @@ export function validateModel(input) {
   model.version = Number.isSafeInteger(input.version) && input.version > 0 ? input.version : 1;
   model.updatedAt = typeof input.updatedAt === 'string' ? input.updatedAt.slice(0, 30) : '';
   return model;
+}
+const bounded = (v,min,max) => typeof v === 'number' && Number.isFinite(v) && v >= min && v <= max;
+const vector = (value,min,max) => Array.isArray(value) && value.length === 3 && value.every(v => bounded(v,min,max));
+function validateVenueModel(input) {
+  const base = validateModel({...DEFAULT_MODEL,name:input.name,ticketUrl:input.ticketUrl || '',version:input.version,updatedAt:input.updatedAt});
+  if (!['theatre','cinema','stadium'].includes(input.venueType)) throw new Error('공간 유형을 선택하세요.');
+  if (!Array.isArray(input.seats) || !input.seats.length || input.seats.length > 5000) throw new Error('공간 모델은 1~5000석까지 저장합니다. 대규모 성능은 별도 확인이 필요합니다.');
+  const labels = new Set();
+  const seats = input.seats.map(s => {
+    if (!s || typeof s.label !== 'string' || !s.label.trim() || s.label.length > 80 || labels.has(s.label.trim())) throw new Error('좌석 이름은 비어 있거나 중복될 수 없습니다.');
+    if (!bounded(s.x,-500,500) || !bounded(s.z,-500,500) || !bounded(s.floor,-20,100) || !Number.isInteger(s.row) || s.row < 0 || s.row > 500 || typeof s.section !== 'string' || !s.section.trim() || s.section.length > 80 || !bounded(s.yaw ?? 0,-360,360)) throw new Error('좌석 위치·높이·방향·행·구역을 확인하세요.');
+    labels.add(s.label.trim()); return {label:s.label.trim(),x:s.x,z:s.z,floor:s.floor,row:s.row,section:s.section.trim(),yaw:s.yaw ?? 0};
+  });
+  if (!Array.isArray(input.targets) || !input.targets.length || input.targets.length > 12) throw new Error('관람 대상은 1~12개여야 합니다.');
+  const targetIds = new Set();
+  const targets = input.targets.map(t => {
+    if (!t || typeof t.id !== 'string' || !/^[a-zA-Z0-9_-]{1,60}$/.test(t.id) || targetIds.has(t.id) || typeof t.name !== 'string' || !t.name.trim() || t.name.length > 80 || !vector(t.position,-500,500) || !Array.isArray(t.size) || t.size.length !== 2 || !t.size.every(v => bounded(v,.1,200)) || !vector(t.rotation ?? [0,0,0],-360,360)) throw new Error('관람 대상의 이름·위치·크기·회전을 확인하세요.');
+    targetIds.add(t.id); return {id:t.id,name:t.name.trim(),position:[...t.position],size:[...t.size],rotation:[...(t.rotation ?? [0,0,0])]};
+  });
+  if (!targetIds.has(input.activeTargetId)) throw new Error('기본 관람 대상을 확인하세요.');
+  if (!Array.isArray(input.obstacles) || input.obstacles.length > 150) throw new Error('구조물은 150개 이하만 가능합니다.');
+  const ids = new Set();
+  const obstacles = input.obstacles.map(o => {
+    if (!o || typeof o.id !== 'string' || !/^[a-zA-Z0-9_-]{1,60}$/.test(o.id) || ids.has(o.id) || typeof o.name !== 'string' || !o.name.trim() || o.name.length > 80 || !vector(o.position,-500,500) || !vector(o.size,.02,200) || !vector(o.rotation ?? [0,0,0],-360,360)) throw new Error('구조물의 이름·위치·크기·회전을 확인하세요.');
+    ids.add(o.id); return {id:o.id,name:o.name.trim(),position:[...o.position],size:[...o.size],rotation:[...(o.rotation ?? [0,0,0])],layout:'all'};
+  });
+  return {...base,schemaVersion:3,venueType:input.venueType,seats,labels:[...labels],targets,activeTargetId:input.activeTargetId,obstacles,
+    stageWidth:bounded(input.stageWidth,2,200)?input.stageWidth:8.6,stageDepth:bounded(input.stageDepth,1,150)?input.stageDepth:3.6,
+    stageHeight:bounded(input.stageHeight,0,3)?input.stageHeight:.6,targetHeight:bounded(input.targetHeight,.1,20)?input.targetHeight:2.4,stageOffset:0,
+    provenance:{source:'operator-geometry',reviewStatus:'needs_site_review'}};
+}
+export function toVenueModel(input = DEFAULT_MODEL) {
+  const model = validateModel(input);
+  if (model.schemaVersion === 3) return model;
+  return validateModel({...model,schemaVersion:3,venueType:'theatre',seats:getSeats(model),obstacles:getObstacles(model,'theatre'),
+    targets:[{id:'stage',name:'무대 활동 영역',position:[model.stageOffset || 0,(model.stageHeight ?? .6)+.08+(model.targetHeight ?? 2.4)/2,-.25],size:[model.stageWidth,model.targetHeight ?? 2.4],rotation:[0,0,0]}],activeTargetId:'stage'});
 }
 function validateCalibratedModel(input) {
   // Reuse the legacy name / URL checks without accepting unchecked nested metadata.
@@ -81,7 +118,7 @@ function validateCalibratedModel(input) {
     provenance:{source:'calibrated-plan', reviewStatus:'needs_site_review', metresPerPixel}};
 }
 export function getSeats(model) {
-  if (model.schemaVersion === 2) return model.seats.map((seat,index) => ({...seat, id:index, col:index}));
+  if (model.schemaVersion >= 2) return model.seats.map((seat,index) => ({...seat, id:index, col:index}));
   return model.labels.map((label, index) => {
     const row = Math.floor(index / 5), col = index % 5;
     return {
@@ -94,7 +131,7 @@ export function getSeats(model) {
 }
 export function eyePosition(seat, eyeHeight = 1.2) { return new THREE.Vector3(seat.x, seat.floor + eyeHeight, seat.z); }
 export function getObstacles(model, layout) {
-  if (model.schemaVersion === 2) return model.obstacles.filter(o => o.layout === 'all' || o.layout === layout);
+  if (model.schemaVersion >= 2) return model.obstacles.filter(o => o.layout === 'all' || o.layout === layout);
   const railZ = 5.5 + model.rowSpacing * 1.55;
   const width = model.seatSpacing * 5 + 2;
   const rail = { id: 'rail', name: '2층 전면 난간', position: [0, model.balconyHeight + model.railHeight / 2, railZ], size: [width, model.railHeight, 0.1] };
@@ -103,8 +140,21 @@ export function getObstacles(model, layout) {
   if (layout === 'concert') obstacles.push({ id: 'tower', name: '촬영 카메라 타워', position: [-1.95 + model.stageOffset, 1.9, 1.5], size: [1.05, 2.6, 0.65] });
   return obstacles;
 }
-export function getTargets(model, columns = 25, rows = 13) {
+export function getTarget(model,targetId) {
+  if (model.schemaVersion === 3) return model.targets.find(t => t.id === (targetId || model.activeTargetId)) || model.targets[0];
+  return {id:'stage',name:'무대 전면',position:[model.stageOffset || 0,(model.stageHeight ?? .6)+.08+(model.targetHeight ?? 2.4)/2,-.25],size:[model.stageWidth,model.targetHeight ?? 2.4],rotation:[0,0,0]};
+}
+export function targetQuaternion(target) { return new THREE.Quaternion().setFromEuler(new THREE.Euler(...target.rotation.map(THREE.MathUtils.degToRad))); }
+export function getTargets(model, columns = 25, rows = 13, targetId) {
   const points = [];
+  if (model.schemaVersion === 3) {
+    const target = getTarget(model,targetId), q = targetQuaternion(target), center = new THREE.Vector3(...target.position);
+    for (let y=0;y<rows;y++) for (let x=0;x<columns;x++) {
+      const p = new THREE.Vector3((x/(columns-1)-.5)*target.size[0],(y/(rows-1)-.5)*target.size[1],0).applyQuaternion(q).add(center);
+      points.push({x:p.x,y:p.y,z:p.z,region:y<Math.ceil(rows/3)?'lower':'upper',column:x,row:y});
+    }
+    return points;
+  }
   for (let y = 0; y < rows; y++) for (let x = 0; x < columns; x++) {
     points.push({ x: (x / (columns - 1) - 0.5) * model.stageWidth + model.stageOffset,
       y: (model.stageHeight ?? 0.6) + 0.08 + y / (rows - 1) * (model.targetHeight ?? 2.4), z: -0.25,
@@ -112,11 +162,13 @@ export function getTargets(model, columns = 25, rows = 13) {
   }
   return points;
 }
-export function analyzeSightline(model, seat, layout = 'theatre', eyeHeight = 1.2) {
+export function analyzeSightline(model, seat, layout = 'theatre', eyeHeight = 1.2, targetId) {
   const origin = eyePosition(seat, eyeHeight);
   const obstacles = getObstacles(model, layout).map(item => ({...item,
-    box: new THREE.Box3().setFromCenterAndSize(new THREE.Vector3(...item.position), new THREE.Vector3(...item.size))}));
-  const targets = getTargets(model);
+    box: new THREE.Box3().setFromCenterAndSize(new THREE.Vector3(), new THREE.Vector3(...item.size)),
+    matrix: new THREE.Matrix4().compose(new THREE.Vector3(...item.position),targetQuaternion({rotation:item.rotation ?? [0,0,0]}),new THREE.Vector3(1,1,1))}));
+  obstacles.forEach(o => {o.inverse=o.matrix.clone().invert();});
+  const targets = getTargets(model,25,13,targetId);
   const ray = new THREE.Ray();
   const hit = new THREE.Vector3();
   const causes = {};
@@ -127,7 +179,8 @@ export function analyzeSightline(model, seat, layout = 'theatre', eyeHeight = 1.
     ray.set(origin, direction.normalize());
     let nearest = null, nearestDistance = distance;
     for (const obstacle of obstacles) {
-      if (ray.intersectBox(obstacle.box, hit)) {
+      if (ray.clone().applyMatrix4(obstacle.inverse).intersectBox(obstacle.box, hit)) {
+        hit.applyMatrix4(obstacle.matrix);
         const d = hit.distanceTo(origin);
         if (d < nearestDistance - 0.001) { nearestDistance = d; nearest = obstacle; }
       }
@@ -137,11 +190,15 @@ export function analyzeSightline(model, seat, layout = 'theatre', eyeHeight = 1.
   });
   const blocked = samples.filter(x => x.blocked).length;
   const lower = samples.filter(x => x.region === 'lower');
+  const target = getTarget(model,targetId), targetCenter = new THREE.Vector3(...target.position);
+  const heading = new THREE.Vector3(0,0,-1).applyAxisAngle(new THREE.Vector3(0,1,0),THREE.MathUtils.degToRad(seat.yaw || 0));
+  const towards = targetCenter.clone().sub(origin);towards.y=0;
   return {
+    targetId:getTarget(model,targetId).id,targetName:getTarget(model,targetId).name,
     visible: Math.round((1 - blocked / samples.length) * 100),
     lowerVisible: Math.round((1 - lower.filter(x => x.blocked).length / lower.length) * 100),
-    distance: Math.hypot(seat.x - model.stageOffset, seat.z + 0.25).toFixed(1),
-    angle: Math.round(Math.atan2(Math.abs(seat.x - model.stageOffset), seat.z + 0.25) * 180 / Math.PI),
+    distance: (model.schemaVersion===3?origin.distanceTo(targetCenter):Math.hypot(seat.x-model.stageOffset,seat.z+.25)).toFixed(1),
+    angle: model.schemaVersion===3?Math.round(THREE.MathUtils.radToDeg(heading.angleTo(towards))):Math.round(Math.atan2(Math.abs(seat.x-model.stageOffset),seat.z+.25)*180/Math.PI),
     samples, causes,
   };
 }

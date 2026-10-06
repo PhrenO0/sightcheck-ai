@@ -62,7 +62,8 @@ export function calculateSeat(input) {
   if (!seat) fail('모델에 없는 좌석입니다.', 'seatLabel');
   if (!['theatre', 'concert'].includes(input.layout || 'theatre')) fail('지원하지 않는 공연 배치입니다.', 'layout');
   const eyeHeight = number(input.eyeHeightM ?? 1.2, 0.9, 1.45, 'eyeHeightM');
-  const result = analyzeSightline(model, seat, input.layout || 'theatre', eyeHeight);
+    if (input.targetId && (model.schemaVersion !== 3 || !model.targets.some(t => t.id === input.targetId))) fail('모델에 없는 관람 대상입니다.', 'targetId');
+    const result = analyzeSightline(model, seat, input.layout || 'theatre', eyeHeight, input.targetId);
   const {samples, ...summary} = result;
   return {seatLabel: seat.label, eyeHeightM: eyeHeight, verticalFov: 60, reviewStatus: 'needs_site_review',
     sampleCount: samples.length, ...summary};

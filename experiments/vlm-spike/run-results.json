@@ -1,5 +1,5 @@
 {
-  "executedAt": "2026-10-01T14:24:48.217Z",
+  "executedAt": "2026-10-06T03:56:18.304Z",
   "sources": {
     "baseImage": {
       "path": "public/engine-plan.png",
@@ -19,7 +19,7 @@
     },
     "railingVlm": {
       "path": "scripts/experiments/vlm-spike/railing-vlm-output.json",
-      "sha256": "79a59b2c7be391d596769c73a2e85e1f612520e6a81cccb0f5684db9e0d2e621"
+      "sha256": "a1481a16dd488942a3d45a6c68134d25681a235d65cb2d32c944c4d76ba66880"
     }
   },
   "baseImage": {
@@ -82,6 +82,8 @@
     "verticalFov": 60,
     "reviewStatus": "needs_site_review",
     "sampleCount": 325,
+    "targetId": "stage",
+    "targetName": "무대 전면",
     "visible": 69,
     "lowerVisible": 20,
     "distance": "9.1",

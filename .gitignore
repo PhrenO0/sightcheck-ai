@@ -11,3 +11,9 @@ __pycache__/
 .DS_Store
 Thumbs.db
 innerWidth
+data/
+tmp/
+input-private/
+output/
+tools/proposal-visuals/
+i.complete

@@ -39,7 +39,7 @@ $('#app').innerHTML = `
   <header class="topbar">
     <a class="brand" href="#" aria-label="시야체크 홈">${icon('eye')}<span>시야체크<span class="brand-dot">.</span></span></a>
     <div class="header-middle">예매하기 전, 내 자리의 시야부터.</div>
-    <div class="header-actions"><span class="demo-badge">가상 공연장 DEMO</span><button id="open-admin" class="text-button">${icon('settings')}<span>공연장 관리</span></button></div>
+    <div class="header-actions"><a href="/operator.html" class="text-button">공연 운영 작업실</a><span class="demo-badge">가상 공연장 DEMO</span><button id="open-admin" class="text-button">${icon('settings')}<span>공연장 관리</span></button></div>
   </header>
   <main>
     <div class="breadcrumb">공연 <span>/</span> 오름 아트홀 <span>/</span> 좌석 시야</div>
