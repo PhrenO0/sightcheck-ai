@@ -22,6 +22,18 @@ npm run preview:showcase
 
 소개 페이지는 **http://127.0.0.1:4192/**에서 확인합니다. `npm run build:html`은 CSS·JavaScript·3D 엔진·사용 글자에 맞춘 Noto Sans KR 글꼴·오픈소스 라이선스를 포함한 **`site-dist/시야체크_AI_소개.html` 한 파일**을 생성합니다. 이 HTML은 서버 설치 없이 브라우저에서 직접 열 수 있습니다. Node API·운영자 계정·도면 원본·로컬 저장소는 포함하지 않습니다. 개발 시 `npm run dev:showcase`를 사용할 수 있습니다. 디자인 출처와 적용 내역은 `showcase/references/README.md`에 정리합니다.
 
+### Netlify 배포와 PDF 소개 자료
+
+`scripts/build-showcase-pdf.py`는 실행 중인 가상 데모의 스크린샷을 사용해 A4 4쪽 소개 PDF를 만듭니다. 한국어 글꼴로 Windows의 맑은 고딕을 사용하며 Python `reportlab`과 `Pillow`가 필요합니다. 캡처는 `showcase/references/screenshots/`에 있습니다. 실제 공연장 사진이나 실증 결과가 아닙니다.
+
+```powershell
+python scripts/build-showcase-pdf.py --site-url https://YOUR-SITE.netlify.app
+npm run build:html
+node scripts/prepare-netlify-showcase.mjs
+```
+
+출력은 `output/pdf/시야체크_AI_서비스소개.pdf`와 `output/netlify-publish/`입니다. Netlify에는 이 배포 폴더를 올립니다. `index.html`에 PDF 다운로드 링크가 연결되고, 별도의 서버·계정·API 키 없이 소개와 좌석 체험을 제공합니다. 로컬 운영자 서버와 데이터는 업로드하지 않습니다.
+
 ## 바로 실행
 
 Node.js 20.19+ 또는 22.12+를 설치한 후:
