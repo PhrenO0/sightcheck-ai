@@ -17,3 +17,5 @@ input-private/
 output/
 tools/proposal-visuals/
 i.complete
+site-dist/
+.netlify/

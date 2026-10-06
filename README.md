@@ -9,6 +9,19 @@
 ![동일 눈높이에서 C3와 D3를 비교하는 시제품 화면](screenshots/compare.png)
 
 기획안·기술 설계·UX 자료는 [docs/README.md](docs/README.md)에 모았습니다.
+
+## HTML 기능 소개 페이지
+
+`showcase/`는 로그인 없이 20개 가상 좌석의 시야를 확인하고 비교하는 공개 소개 페이지입니다. 기존 `src/model.js`·`src/scene.js`를 재사용해 눈높이와 공연별 구조물의 차이를 브라우저에서 계산합니다. 운영자 자료 준비 → 검수 → 게시 과정은 저장된 예시 자료로 체험합니다. 실제 AI 도면 추출이나 서버 게시를 실행하지 않습니다.
+
+```sh
+npm install
+npm run build:html
+npm run preview:showcase
+```
+
+소개 페이지는 **http://127.0.0.1:4192/**에서 확인합니다. `npm run build:html`은 CSS·JavaScript·3D 엔진·사용 글자에 맞춘 Noto Sans KR 글꼴·오픈소스 라이선스를 포함한 **`site-dist/시야체크_AI_소개.html` 한 파일**을 생성합니다. 이 HTML은 서버 설치 없이 브라우저에서 직접 열 수 있습니다. Node API·운영자 계정·도면 원본·로컬 저장소는 포함하지 않습니다. 개발 시 `npm run dev:showcase`를 사용할 수 있습니다. 디자인 출처와 적용 내역은 `showcase/references/README.md`에 정리합니다.
+
 ## 바로 실행
 
 Node.js 20.19+ 또는 22.12+를 설치한 후:

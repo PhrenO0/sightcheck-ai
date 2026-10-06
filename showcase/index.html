@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f7f7ef" />
+    <meta name="description" content="그 자리, 잘 보일까요? 시야체크 AI의 가상 공연장에서 좌석별 3D 시야를 확인하고 비교해 보세요." />
+    <meta property="og:title" content="시야체크 AI · 예매하기 전, 내 자리의 시야부터" />
+    <meta property="og:description" content="좌석의 위치를 넘어, 그 자리에서 보이는 경험까지. 3D 좌석 비교와 공연별 배치 관리 데모." />
+    <title>시야체크 AI · 그 자리, 잘 보일까요?</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%231c3f35'/%3E%3Cpath d='M10 32s8-14 22-14 22 14 22 14-8 14-22 14S10 32 10 32Z' fill='none' stroke='%23d7ef99' stroke-width='4'/%3E%3Ccircle cx='32' cy='32' r='7' fill='%23d7ef99'/%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <div class="reading-progress" aria-hidden="true"></div>
+    <a class="skip" href="#experience">좌석 체험으로 바로가기</a>
+    <header class="navigation wrap">
+      <a class="brand" href="#top" aria-label="시야체크 AI 홈"><svg viewBox="0 0 32 24" fill="none" aria-hidden="true"><path d="M2 12S7 3 16 3s14 9 14 9-5 9-14 9S2 12 2 12Z" stroke="currentColor" stroke-width="2"/><circle cx="16" cy="12" r="4.5" fill="currentColor"/></svg>시야체크<span>AI</span></a>
+      <nav aria-label="페이지 탐색"><a href="#experience">좌석 체험</a><a href="#workflow">도입 과정</a><a href="#about">서비스 소개</a></nav>
+      <a class="nav-cta" href="#experience">미리 보기 <span aria-hidden="true">↗</span></a>
+    </header>
+    <main id="top">
+      <section class="hero wrap" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <span class="eyebrow"><i></i> 예매하기 전, 내 자리의 시야부터</span>
+          <span class="hero-coordinate" aria-hidden="true">SIGHTCHECK / 01<br>YOUR SEAT. YOUR VIEW.</span>
+          <h1 id="hero-title"><span class="title-line">그 자리,</span><span class="title-line">잘 <span class="word-mark">보일까요?</span></span></h1>
+          <p>“시야가 제한될 수 있습니다.”<br>글 한 줄로는 알 수 없었던 내 자리.<br><strong>이번 공연에서 무엇이 가리는지,<br>먼저 보고 선택하세요.</strong></p>
+          <a class="button dark" href="#experience">내 자리 미리 보기 <span aria-hidden="true">↗</span></a>
+          <span class="hero-note">설치 없이 · 로그인 없이 · 브라우저에서</span>
+          <div class="hero-stamp" aria-hidden="true"><span>SEE BEFORE<br>YOU CHOOSE</span><b>↗</b></div>
+        </div>
+        <div class="experience" id="experience" aria-label="좌석 시야 체험">
+          <div class="demo-heading"><div><span class="micro">LIVE DEMO / 가상 공연장</span><h2>내 자리에서 보는 무대</h2></div><span class="demo-pill"><i></i> 체험 가능</span></div>
+          <div class="demo-toolbar"><div class="segmented" aria-label="시점 선택"><button id="seat-mode" aria-pressed="true">좌석 시점</button><button id="space-mode" aria-pressed="false">공간 전체</button></div><button id="compare" class="compare-button" aria-pressed="false">두 자리 비교 <span aria-hidden="true">↔</span></button></div>
+          <div class="scene-shell">
+            <div id="scene"></div>
+            <div class="scene-tags"><span id="seat-tag">2층 · C3</span><span id="compare-tag" hidden></span></div>
+            <div class="divider" id="divider" hidden></div>
+            <span class="scene-caption">3D 시야 시뮬레이션</span>
+            <button id="reset-view" aria-label="시점을 정면으로 되돌리기">↺</button>
+          </div>
+          <div class="seat-select"><div class="seat-caption"><strong>어느 자리에 앉아볼까요?</strong><span id="pick-hint">좌석을 선택해 보세요</span></div><div id="seat-map" aria-label="예시 좌석 20개"></div></div>
+          <div class="result-bar" aria-live="polite"><div><span class="result-label">선택한 자리</span><strong id="selected-label">C3</strong></div><div><span class="result-label">가리지 않은 표본</span><strong id="visible-value">—</strong></div><p id="analysis"></p></div>
+          <div class="comparison-result" id="comparison-result" hidden></div>
+          <div class="demo-options"><label>공연 배치 <select id="layout"><option value="theatre">뮤지컬 · 고정 무대</option><option value="concert">라이브 · 촬영 타워 추가</option></select></label><label>앉은 눈높이 <input id="eye-height" type="range" min="0.9" max="1.45" step="0.05" value="1.2"><output id="eye-value">1.20m</output></label></div>
+          <div class="demo-foot"><span id="scene-status" role="status">3D 준비 중</span><button id="method">계산 기준 보기 ⓘ</button></div>
+        </div>
+      </section>
+      <div class="caption-strip wrap"><span>SEAT LOCATION → SEAT EXPERIENCE</span><p>좌석의 <strong>위치</strong>를 넘어, 그 자리에서 보이는 <strong>경험</strong>까지.</p><span>01 / PERSPECTIVE</span></div>
+      <section class="story-section" aria-labelledby="story-title"><div class="wrap"><span class="eyebrow">THE MOMENT BEFORE BOOKING</span><h2 id="story-title"><span>“가려질 수 있습니다.”</span><br>그럼, <em>어디까지</em> 가릴까요?</h2><div class="story-bottom"><span class="story-arrow" aria-hidden="true">↘</span><p>후기 열 개를 읽어도 떠올리기 어려웠던 시야.<br>글로 상상하던 자리를 눈으로 확인하는 경험으로 바꿉니다.</p><span class="story-index">01<br><i>문제에서 경험으로</i></span></div></div></section>
+      <section class="value-section wrap" id="about" aria-labelledby="value-title">
+        <div class="section-heading"><span class="eyebrow">A CLEARER CHOICE</span><h2 id="value-title">같은 공연.<br>다른 자리. 다른 시야.</h2><p>난간, 촬영 타워, 무대 배치.<br>좌석 선택에 필요한 차이를 눈으로 확인합니다.</p></div>
+        <div class="value-grid">
+          <article class="value-card mint"><span class="card-number">01</span><div class="line-illustration"><svg viewBox="0 0 280 120" role="img" aria-label="눈에서 무대까지 이어진 시야가 난간에 가려지는 모식도"><path d="M30 82 242 30M30 82 242 99" fill="none" stroke="#55715e" stroke-width="1.5"/><path d="M30 82 242 64" stroke="#1c3f35" stroke-width="2" stroke-dasharray="5 4"/><rect x="153" y="62" width="8" height="47" fill="#1c3f35"/><path d="M135 62h40" stroke="#1c3f35" stroke-width="5"/><rect x="238" y="26" width="9" height="80" fill="#55715e"/><circle cx="30" cy="82" r="11" fill="#f7f7ef" stroke="#1c3f35" stroke-width="2"/><circle cx="30" cy="82" r="4" fill="#1c3f35"/><text x="133" y="48" fill="#1c3f35" font-size="12">난간</text></svg></div><h3>무엇이 가리는지, 구체적으로.</h3><p>‘시야 제한 가능’이라는 안내를<br>내 자리에서 확인할 수 있는 정보로.</p><button class="inline-link" id="try-rail">난간이 있는 자리 보기 ↗</button></article>
+          <article class="value-card ivory"><span class="card-number">02</span><div class="compare-illustration"><span>A<span class="mock-stage"></span></span><span>B<span class="mock-stage"></span></span></div><h3>두 자리를, 같은 기준으로.</h3><p>동일한 눈높이와 화각에서 비교해<br>나에게 더 맞는 자리를 선택합니다.</p><button class="inline-link" id="try-compare">C3와 D3 비교하기 ↗</button></article>
+          <article class="value-card peach"><span class="card-number">03</span><div class="layout-illustration"><span class="stage-block">STAGE</span><span class="tower-block">촬영<br>타워</span><div>● ● ● ● ●<br>● ● ● ● ●<br>● ● ● ● ●</div></div><h3>이번 공연의 배치까지.</h3><p>공연마다 바뀌는 무대와 구조물.<br>같은 공연장도 회차별로 관리합니다.</p><button class="inline-link" id="try-layout">촬영 타워 배치 체험 ↗</button></article>
+        </div>
+      </section>
+      <section class="workflow-section" id="workflow" aria-labelledby="workflow-title"><div class="wrap">
+        <div class="workflow-heading"><div><span class="eyebrow">FOR VENUE & EVENT TEAMS</span><h2 id="workflow-title">운영자는 공간을 준비하고,<br>관객은 시야를 확인합니다.</h2></div><p>도면 분석을 출발점으로,<br>치수 보정과 현장 대조를 거쳐 게시하는 흐름.<br>아래 예시로 도입 과정을 살펴보세요.</p></div>
+        <div class="workflow-grid">
+          <article class="flow-card active" data-step="0"><div class="flow-label"><span>01 / INPUT</span><span id="input-badge" class="flow-badge">예시 자료</span></div><h3>공간 자료 준비</h3><div class="floorplan" id="floorplan"></div><p>축척 있는 평면·단면도, 좌석 위치,<br>난간과 구조물의 치수를 준비합니다.</p><button id="load-plan" class="button outline">예시 도면 불러오기 <span>＋</span></button></article>
+          <article class="flow-card" data-step="1"><div class="flow-label"><span>02 / REVIEW</span><span id="review-badge" class="flow-badge">준비 전</span></div><h3>후보 추출 · 검수</h3><div class="review-visual"><div><span>좌석 좌표</span><strong id="review-seats">—</strong></div><div><span>좌석 바닥 · 높이</span><strong id="review-height">—</strong></div><div><span>난간 높이</span><strong id="review-rail">—</strong></div><div class="review-alert" id="review-note">자료를 불러오면 예시 후보가 표시됩니다.</div></div><p>AI 후보를 치수로 보정하고,<br>대표 좌석 실사진과 현장에서 대조합니다.</p><button id="review-plan" class="button outline" disabled>검수 흐름 체험 <span>✓</span></button></article>
+          <article class="flow-card" data-step="2"><div class="flow-label"><span>03 / SHARE</span><span id="publish-badge" class="flow-badge">준비 전</span></div><h3>예매 화면에 연결</h3><div class="ticket-visual"><span class="ticket-top">오름 아트홀 <i>EXAMPLE</i></span><strong>내 자리의 시야부터.</strong><div class="ticket-seats">A1　A2　A3　A4　A5<br>B1　B2　B3　B4　B5</div><span class="ticket-preview" id="ticket-preview">시야 미리 보기 ↗</span></div><p>게시한 시야를 링크나 위젯으로 제공.<br>배치가 바뀌면 다시 검수합니다.</p><button id="publish-plan" class="button outline" disabled>게시 흐름 체험 <span>↗</span></button></article>
+        </div>
+        <p class="workflow-status" id="workflow-status" role="status">목업 체험입니다. 파일을 업로드하거나 실제 도면을 AI로 분석하지 않습니다.</p>
+        <div class="input-note"><strong>도면 한 장이면 충분할까요?</strong><p>평면도만으로는 높이와 가림을 확정할 수 없습니다. 축척·기준 길이와 단면 높이, 공연별 구조물 위치가 필요합니다. 사진은 대표 좌석의 시야를 대조하는 데 사용합니다.</p></div>
+      </div></section>
+      <section class="closing wrap"><div><span class="eyebrow">SEE BEFORE YOU CHOOSE</span><h2>좋은 자리의 기준은,<br>내가 보고 싶은 것.</h2></div><div><p>시야체크 AI는 그 선택을 돕는<br>공간 기반 좌석 시야 서비스입니다.</p><a class="button dark" href="#experience">다시 체험하기 <span>↗</span></a></div></section>
+      <section class="boundary wrap" aria-label="데모 안내"><strong>지금 보고 계신 것은 가상 공연장 데모입니다.</strong><p>좌석과 무대는 시연용 데이터입니다. 표본 비율은 입력한 고정 구조물의 가림 계산값이며 실제 관람 만족도나 시야를 보장하지 않습니다. 앞사람의 키·움직임, 배우 동선과 현장 연출은 반영하지 않습니다. 실제 예매·결제 및 실시간 VLM 도면 변환은 제공하지 않습니다.</p></section>
+    </main>
+    <div class="ticker" aria-hidden="true"><div><span>SEE BEFORE YOU CHOOSE <i>✳</i> SIGHTCHECK AI <i>✳</i> </span><span>SEE BEFORE YOU CHOOSE <i>✳</i> SIGHTCHECK AI <i>✳</i> </span></div></div>
+    <footer class="wrap"><a class="brand" href="#top">시야체크<span>AI</span></a><span>한 공간, 여러 시점. 더 이해하기 쉬운 선택.</span><div class="footer-links"><a href="https://github.com/PhrenO0/sightcheck-ai" target="_blank" rel="noopener noreferrer">프로젝트 ↗</a><button id="credits">디자인·오픈소스 출처 ↗</button></div></footer>
+    <dialog id="method-dialog"><div class="modal-top"><h2>시야 계산의 기준</h2><button id="close-method" aria-label="계산 기준 닫기">×</button></div><p>좌석의 눈 위치에서 무대 전면의 <strong>325개 표본</strong>으로 광선을 보냅니다. 무대보다 먼저 난간이나 촬영 타워를 만나면 가린 표본으로 계산합니다.</p><p>가리지 않은 표본 비율은 실제 보이는 무대 면적이나 관람 만족도와 다릅니다. 좌석은 동일한 <strong>화각 60°</strong>와 선택한 눈높이로 비교합니다.</p><p>하나의 3D 공간에서 좌석 카메라를 이동하므로, 좌석마다 별도의 AI 이미지를 생성하지 않습니다. 외관과 무대 장식은 설명을 위한 가상 표현입니다.</p><p class="modal-note">실서비스에는 치수 확인, 동일 공연 배치의 대표 좌석 촬영, 운영자의 대조와 검수가 필요합니다.</p></dialog>
+    <dialog id="credits-dialog"><div class="modal-top"><h2>디자인과 코드의 출처</h2><button id="close-credits" aria-label="출처 닫기">×</button></div><p><a href="https://www.threads.com/@choi.openai/post/Dbst_yWDqaM" target="_blank" rel="noopener noreferrer">Threads · OpenDesign 소개 원문 ↗</a></p><p><a href="https://github.com/nexu-io/open-design" target="_blank" rel="noopener noreferrer">OpenDesign ↗</a>의 Dramatic·Storytelling 디자인 가이드를 참고했습니다. 대비, 큰 제목, 문제 → 체험 → 도입의 흐름을 시야체크 브랜드에 맞게 재해석했습니다. 완성 템플릿을 복제하거나 OpenDesign 앱으로 생성한 결과는 아닙니다.</p><p><a href="https://github.com/motiondivision/motion" target="_blank" rel="noopener noreferrer">Motion ↗</a> · 텍스트 및 섹션 등장 모션<br><a href="https://github.com/darkroomengineering/lenis" target="_blank" rel="noopener noreferrer">Lenis ↗</a> · 데스크톱 스크롤과 앵커 이동<br><a href="https://github.com/mrdoob/three.js" target="_blank" rel="noopener noreferrer">Three.js ↗</a> · 기존 시야체크 3D 엔진</p><p class="modal-note">코드와 한국어 설명은 이 프로젝트에 맞춰 작성했습니다. 사용한 오픈소스의 라이선스 원문은 단일 HTML 내부에 포함되어 있습니다.</p></dialog>
+    <noscript><p>좌석 체험에는 JavaScript가 필요합니다. 시야체크 AI는 예매 전에 좌석별 시야를 확인하고 비교하는 서비스입니다.</p></noscript>
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
