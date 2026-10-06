@@ -8,7 +8,7 @@ $taskServer = Join-Path $taskRoot 'scripts\serve.mjs'
 $taskPort = if ($env:SIGHTCHECK_PORT) { $env:SIGHTCHECK_PORT } else { '4173' }
 $taskUrl = 'http://127.0.0.1:' + $taskPort + '/'
 $taskReady = $false
-try { $taskHealth = Invoke-RestMethod -Uri ($taskUrl + 'api/health') -TimeoutSec 2; $taskReply = Invoke-WebRequest -Uri $taskUrl -TimeoutSec 2; $taskReady = $taskHealth.engineVersion -eq '0.2.0' -and $taskReply.Content -match '시야체크' } catch { }
+try { $taskHealth = Invoke-RestMethod -Uri ($taskUrl + 'api/health') -TimeoutSec 2; $taskReply = Invoke-WebRequest -Uri $taskUrl -TimeoutSec 2; $taskReady = $taskHealth.engineVersion -eq '0.3.0' -and $taskReply.Content -match '시야체크' } catch { }
 if (-not $taskReady) {
   if (-not $env:SIGHTCHECK_PORT) {
     $taskFreePort = $null
@@ -25,7 +25,7 @@ if (-not $taskReady) {
   Start-Process -FilePath $taskNode -ArgumentList @('"' + $taskServer + '"') -WorkingDirectory $taskRoot -WindowStyle Hidden
   for ($taskAttempt = 0; $taskAttempt -lt 20; $taskAttempt++) {
     Start-Sleep -Milliseconds 200
-    try { $taskHealth = Invoke-RestMethod -Uri ($taskUrl + 'api/health') -TimeoutSec 1; $taskReply = Invoke-WebRequest -Uri $taskUrl -TimeoutSec 1; if ($taskHealth.engineVersion -eq '0.2.0' -and $taskReply.Content -match '시야체크') { $taskReady = $true; break } } catch { }
+    try { $taskHealth = Invoke-RestMethod -Uri ($taskUrl + 'api/health') -TimeoutSec 1; $taskReply = Invoke-WebRequest -Uri $taskUrl -TimeoutSec 1; if ($taskHealth.engineVersion -eq '0.3.0' -and $taskReply.Content -match '시야체크') { $taskReady = $true; break } } catch { }
   }
 }
-if ($taskReady) { Start-Process $taskUrl } else { throw "변환 API 서버를 시작하지 못했습니다. 다른 프로그램이 $taskPort 포트를 사용하면 SIGHTCHECK_PORT로 다른 포트를 지정하세요." }
+if ($taskReady) { Start-Process ($taskUrl + 'operator.html') } else { throw "변환 API 서버를 시작하지 못했습니다. 다른 프로그램이 $taskPort 포트를 사용하면 SIGHTCHECK_PORT로 다른 포트를 지정하세요." }

@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { getSeats, getObstacles, eyePosition, analyzeSightline } from './model.js';
+import { getSeats, getObstacles, eyePosition, analyzeSightline, getTarget, targetQuaternion } from './model.js';
 
 const color = { seat: '#65544e', mint: '#c7ef7b', wood: '#55403a', dark: '#171820', rail: '#343b47' };
 
@@ -91,6 +91,7 @@ export class VenueViewer {
       geometries.forEach(x => x.dispose()); materials.forEach(x => x.dispose()); textures.forEach(x => x.dispose());
     }
     const root = this.root = new THREE.Group(); this.scene.add(root);
+    if (model.schemaVersion===3) {this.rebuildVenue(root,model,layout);return;}
     root.add(new THREE.HemisphereLight('#f5eee3', '#303347', 2.2));
     const frontLight = new THREE.DirectionalLight('#ffdfbe', 3.5); frontLight.position.set(-5, 7, 4); root.add(frontLight);
     const stageLight = new THREE.PointLight('#d1efa3', 65, 14, 2); stageLight.position.set(0, 4.8, 0.6); root.add(stageLight);
@@ -158,6 +159,42 @@ export class VenueViewer {
     this.schedule();
   }
 
+  rebuildVenue(root,model,layout) {
+    const all=[...this.seats.map(s=>[s.x,s.floor,s.z]),...model.targets.map(t=>t.position)],xs=all.map(p=>p[0]),zs=all.map(p=>p[2]);
+    const minX=Math.min(...xs)-7,maxX=Math.max(...xs)+7,minZ=Math.min(...zs)-8,maxZ=Math.max(...zs)+7;
+    const span=Math.max(maxX-minX,maxZ-minZ,18),maxY=Math.max(...this.seats.map(s=>s.floor+3),...model.targets.map(t=>t.position[1]+t.size[1]/2),8);
+    this.camera.far=this.cameraB.far=span*5;this.scene.fog=new THREE.Fog('#151922',span*1.5,span*4);
+    root.add(new THREE.HemisphereLight('#eef2df','#242b42',2.5));
+    const light=new THREE.DirectionalLight('#fff3df',3.4);light.position.set(-span/3,maxY+8,span/3);root.add(light);
+    this.box(root,[maxX-minX,.2,maxZ-minZ],[(minX+maxX)/2,-.15,(minZ+maxZ)/2],this.material('#252b32'));
+    if(model.venueType!=='stadium') {
+      const wall=this.material('#252630');
+      this.box(root,[.2,maxY,maxZ-minZ],[minX,maxY/2,(minZ+maxZ)/2],wall);
+      this.box(root,[.2,maxY,maxZ-minZ],[maxX,maxY/2,(minZ+maxZ)/2],wall);
+      this.box(root,[maxX-minX,maxY,.2],[(minX+maxX)/2,maxY/2,minZ],wall);
+    }
+    // These platforms are a visual envelope; only registered obstacles decide occlusion.
+    for(const s of this.seats) {
+      if(s.floor>0)this.box(root,[1,Math.max(.08,s.floor),1.25],[s.x,s.floor/2-.04,s.z],this.material('#30353b'));
+    }
+    for(const t of model.targets) {
+      const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=512;
+      const ctx=canvas.getContext('2d'),horizontal=Math.abs(t.rotation[0])>45;
+      ctx.fillStyle=horizontal?'#3e7654':model.venueType==='cinema'?'#d7ddd8':'#294d43';ctx.fillRect(0,0,1024,512);
+      ctx.strokeStyle=horizontal?'#dbe9cf':'#a6c6b3';ctx.lineWidth=5;ctx.strokeRect(20,20,984,472);
+      ctx.beginPath();ctx.moveTo(512,20);ctx.lineTo(512,492);ctx.stroke();
+      if(horizontal){ctx.beginPath();ctx.arc(512,256,65,0,Math.PI*2);ctx.stroke();}
+      ctx.fillStyle=horizontal?'#edf7e7':model.venueType==='cinema'?'#37574b':'#c1dfae';ctx.font='36px sans-serif';ctx.textAlign='center';ctx.fillText(t.name,512,105);
+      const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;
+      const plane=new THREE.Mesh(new THREE.PlaneGeometry(...t.size),new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide}));
+      plane.position.set(...t.position);plane.quaternion.copy(targetQuaternion(t));root.add(plane);
+    }
+    for(const obstacle of getObstacles(model,layout)) {
+      const mesh=this.box(root,obstacle.size,obstacle.position,this.material('#68685d',{metalness:.25,roughness:.5}));mesh.quaternion.copy(targetQuaternion({rotation:obstacle.rotation || [0,0,0]}));
+    }
+    this.createSeats(root);this.overlay=new THREE.Group();root.add(this.overlay);this.schedule();
+  }
+
   mannequin(parent, position, material) {
     const person = new THREE.Group(); person.position.set(...position); parent.add(person);
     const head = new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 8), material); head.position.y = 1.52; person.add(head);
@@ -181,7 +218,9 @@ export class VenueViewer {
     for (const part of parts) {
       const mesh = new THREE.InstancedMesh(new THREE.BoxGeometry(...part.size), seatMat, this.seats.length);
       for (const seat of this.seats) {
-        matrix.makeTranslation(seat.x + part.offset[0], seat.floor + part.offset[1], seat.z + part.offset[2]);
+        const q=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),THREE.MathUtils.degToRad(seat.yaw || 0));
+        const p=new THREE.Vector3(...part.offset).applyQuaternion(q).add(new THREE.Vector3(seat.x,seat.floor,seat.z));
+        matrix.compose(p,q,new THREE.Vector3(1,1,1));
         mesh.setMatrixAt(seat.id, matrix); mesh.setColorAt(seat.id, new THREE.Color(color.seat));
       }
       root.add(mesh); this.seatInstances.push(mesh);
@@ -192,7 +231,7 @@ export class VenueViewer {
   }
 
   setView(view) {
-    const changed = view.selected !== this.view.selected || view.mode !== this.view.mode || view.comparison !== this.view.comparison;
+    const changed = view.selected !== this.view.selected || view.mode !== this.view.mode || view.comparison !== this.view.comparison || view.targetId !== this.view.targetId;
     this.view = {...this.view, ...view};
     if (changed) {this.yaw = 0; this.pitch = 0;}
     if (!this.unavailable && this.seatInstances) for (const mesh of this.seatInstances) {
@@ -207,7 +246,7 @@ export class VenueViewer {
     if (!this.overlay) return;
     for (const object of [...this.overlay.children]) { object.geometry.dispose(); object.material.dispose(); this.overlay.remove(object); }
     if (!this.view.overlay) return;
-    const result = analyzeSightline(this.model, this.seats[this.view.selected], this.view.layout, this.view.eyeHeight);
+    const result = analyzeSightline(this.model, this.seats[this.view.selected], this.view.layout, this.view.eyeHeight,this.view.targetId);
     const positions = [];
     for (const sample of result.samples.filter(x => x.blocked)) positions.push(sample.x, sample.y, sample.z + 0.01);
     const geometry = new THREE.BufferGeometry(); geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
@@ -217,11 +256,12 @@ export class VenueViewer {
   positionCamera(camera, seat, aspect) {
     camera.aspect = aspect; camera.fov = 60;
     if (this.view.mode === 'overview') {
-      const end = Math.max(...this.seats.map(s => s.z));
-      camera.position.set(Math.max(13,this.model.stageWidth), Math.max(12,end), Math.max(18,end*1.6)); camera.lookAt(0, 1.8, end/3);
+      const box=new THREE.Box3();for(const s of this.seats)box.expandByPoint(new THREE.Vector3(s.x,s.floor,s.z));
+      const center=box.getCenter(new THREE.Vector3()),span=Math.max(...box.getSize(new THREE.Vector3()).toArray(),15);
+      camera.position.copy(center).add(new THREE.Vector3(span,span,span*1.25));camera.lookAt(center);
     } else {
       camera.position.copy(eyePosition(seat, this.view.eyeHeight));
-      const target = new THREE.Vector3(this.model.stageOffset, (this.model.stageHeight ?? 0.6) + 0.08 + (this.model.targetHeight ?? 2.4) / 2, -0.25);
+      const target = new THREE.Vector3(...getTarget(this.model,this.view.targetId).position);
       const direction = target.sub(camera.position).normalize();
       direction.applyAxisAngle(new THREE.Vector3(0, 1, 0), this.yaw);
       direction.y += this.pitch;
@@ -230,12 +270,12 @@ export class VenueViewer {
     camera.updateProjectionMatrix();
   }
   schedule() {
-    if (this.unavailable || this.scheduled) return;
+    if (this.unavailable || this.scheduled || this.destroyed) return;
     this.scheduled = true;
     requestAnimationFrame(() => {this.scheduled = false; this.render();});
   }
   render() {
-    if (!this.model || !this.container.clientWidth || !this.container.clientHeight) return;
+    if (this.destroyed || !this.model || !this.container.clientWidth || !this.container.clientHeight) return;
     const started = performance.now();
     const width = Math.floor(this.container.clientWidth), height = Math.floor(this.container.clientHeight);
     // CSS size can already match while the GPU drawing buffer is still 300×150.
@@ -280,5 +320,12 @@ export class VenueViewer {
     const link = document.createElement('a');
     link.href = out.toDataURL('image/png'); link.download = `sightcheck-${seats.replace(/\W/g, '-')}.png`;
     document.body.append(link); link.click(); link.remove();
+  }
+  destroy() {
+    this.destroyed=true;this.resizeObserver?.disconnect();
+    const geometries=new Set(),materials=new Set(),textures=new Set();
+    this.scene.traverse(o=> {if(o.geometry)geometries.add(o.geometry);for(const m of Array.isArray(o.material)?o.material:o.material?[o.material]:[]){materials.add(m);if(m.map)textures.add(m.map);}});
+    geometries.forEach(g=>g.dispose());textures.forEach(t=>t.dispose());materials.forEach(m=>m.dispose());
+    this.renderer?.dispose();this.canvas?.remove();
   }
 }
