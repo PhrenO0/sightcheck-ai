@@ -1,0 +1,332 @@
+{
+  "stage": {
+    "area_pixel": {
+      "x_min": 303,
+      "y_min": 25,
+      "x_max": 951,
+      "y_max": 138
+    },
+    "center_pixel": {
+      "x": 627.0,
+      "y": 81.5
+    },
+    "certainty": "확실",
+    "notes": "STAGE라고 명시된 직사각형 본체 기준. 좌표는 1254x1254 이미지의 좌상단을 (0,0)으로 사용."
+  },
+  "seats": [
+    {
+      "seat_number": "A1",
+      "center_pixel": {
+        "x": 423.5,
+        "y": 570.0
+      },
+      "row": "A",
+      "section": null,
+      "certainty": {
+        "seat_number": "확실",
+        "center_pixel": "확실",
+        "row": "확실",
+        "section": "확인불가"
+      }
+    },
+    {
+      "seat_number": "A2",
+      "center_pixel": {
+        "x": 525.5,
+        "y": 570.0
+      },
+      "row": "A",
+      "section": null,
+      "certainty": {
+        "seat_number": "확실",
+        "center_pixel": "확실",
+        "row": "확실",
+        "section": "확인불가"
+      }
+    },
+    {
+      "seat_number": "A3",
+      "center_pixel": {
+        "x": 627.0,
+        "y": 570.0
+      },
+      "row": "A",
+      "section": null,
+      "certainty": {
+        "seat_number": "확실",
+        "center_pixel": "확실",
+        "row": "확실",
+        "section": "확인불가"
+      }
+    },
+    {
+      "seat_number": "A4",
+      "center_pixel": {
+        "x": 728.5,
+        "y": 570.0
+      },
+      "row": "A",
+      "section": null,
+      "certainty": {
+        "seat_number": "확실",
+        "center_pixel": "확실",
+        "row": "확실",
+        "section": "확인불가"
+      }
+    },
+    {
+      "seat_number": "A5",
+      "center_pixel": {
+        "x": 830.5,
+        "y": 570.0
+      },
+      "row": "A",
+      "section": null,
+      "certainty": {
+        "seat_number": "확실",
+        "center_pixel": "확실",
+        "row": "확실",
+        "section": "확인불가"
+      }
+    },
+    {
+      "seat_number": "B1",
+      "center_pixel": {
+        "x": 423.5,
+        "y": 695.0
+      },
+      "row": "B",
+      "section": null,
+      "certainty": {
+        "seat_number": "확실",
+        "center_pixel": "확실",
+        "row": "확실",
+        "section": "확인불가"
+      }
+    },
+    {
+      "seat_number": "B2",
+      "center_pixel": {
+        "x": 525.5,
+        "y": 695.0
+      },
+      "row": "B",
+      "section": null,
+      "certainty": {
+        "seat_number": "확실",
+        "center_pixel": "확실",
+        "row": "확실",
+        "section": "확인불가"
+      }
+    },
+    {
+      "seat_number": "B3",
+      "center_pixel": {
+        "x": 627.0,
+        "y": 695.0
+      },
+      "row": "B",
+      "section": null,
+      "certainty": {
+        "seat_number": "확실",
+        "center_pixel": "확실",
+        "row": "확실",
+        "section": "확인불가"
+      }
+    },
+    {
+      "seat_number": "B4",
+      "center_pixel": {
+        "x": 728.5,
+        "y": 695.0
+      },
+      "row": "B",
+      "section": null,
+      "certainty": {
+        "seat_number": "확실",
+        "center_pixel": "확실",
+        "row": "확실",
+        "section": "확인불가"
+      }
+    },
+    {
+      "seat_number": "B5",
+      "center_pixel": {
+        "x": 830.5,
+        "y": 695.0
+      },
+      "row": "B",
+      "section": null,
+      "certainty": {
+        "seat_number": "확실",
+        "center_pixel": "확실",
+        "row": "확실",
+        "section": "확인불가"
+      }
+    },
+    {
+      "seat_number": "C1",
+      "center_pixel": {
+        "x": 423.5,
+        "y": 852.0
+      },
+      "row": "C",
+      "section": null,
+      "certainty": {
+        "seat_number": "확실",
+        "center_pixel": "확실",
+        "row": "확실",
+        "section": "확인불가"
+      }
+    },
+    {
+      "seat_number": "C2",
+      "center_pixel": {
+        "x": 525.5,
+        "y": 852.0
+      },
+      "row": "C",
+      "section": null,
+      "certainty": {
+        "seat_number": "확실",
+        "center_pixel": "확실",
+        "row": "확실",
+        "section": "확인불가"
+      }
+    },
+    {
+      "seat_number": "C3",
+      "center_pixel": {
+        "x": 627.0,
+        "y": 852.0
+      },
+      "row": "C",
+      "section": null,
+      "certainty": {
+        "seat_number": "확실",
+        "center_pixel": "확실",
+        "row": "확실",
+        "section": "확인불가"
+      }
+    },
+    {
+      "seat_number": "C4",
+      "center_pixel": {
+        "x": 728.5,
+        "y": 852.0
+      },
+      "row": "C",
+      "section": null,
+      "certainty": {
+        "seat_number": "확실",
+        "center_pixel": "확실",
+        "row": "확실",
+        "section": "확인불가"
+      }
+    },
+    {
+      "seat_number": "C5",
+      "center_pixel": {
+        "x": 830.5,
+        "y": 852.0
+      },
+      "row": "C",
+      "section": null,
+      "certainty": {
+        "seat_number": "확실",
+        "center_pixel": "확실",
+        "row": "확실",
+        "section": "확인불가"
+      }
+    },
+    {
+      "seat_number": "D1",
+      "center_pixel": {
+        "x": 423.5,
+        "y": 978.5
+      },
+      "row": "D",
+      "section": null,
+      "certainty": {
+        "seat_number": "확실",
+        "center_pixel": "확실",
+        "row": "확실",
+        "section": "확인불가"
+      }
+    },
+    {
+      "seat_number": "D2",
+      "center_pixel": {
+        "x": 525.5,
+        "y": 978.0
+      },
+      "row": "D",
+      "section": null,
+      "certainty": {
+        "seat_number": "확실",
+        "center_pixel": "확실",
+        "row": "확실",
+        "section": "확인불가"
+      }
+    },
+    {
+      "seat_number": "D3",
+      "center_pixel": {
+        "x": 627.0,
+        "y": 978.0
+      },
+      "row": "D",
+      "section": null,
+      "certainty": {
+        "seat_number": "확실",
+        "center_pixel": "확실",
+        "row": "확실",
+        "section": "확인불가"
+      }
+    },
+    {
+      "seat_number": "D4",
+      "center_pixel": {
+        "x": 728.5,
+        "y": 978.5
+      },
+      "row": "D",
+      "section": null,
+      "certainty": {
+        "seat_number": "확실",
+        "center_pixel": "확실",
+        "row": "확실",
+        "section": "확인불가"
+      }
+    },
+    {
+      "seat_number": "D5",
+      "center_pixel": {
+        "x": 830.5,
+        "y": 978.0
+      },
+      "row": "D",
+      "section": null,
+      "certainty": {
+        "seat_number": "확실",
+        "center_pixel": "확실",
+        "row": "확실",
+        "section": "확인불가"
+      }
+    }
+  ],
+  "obstacles": [
+    {
+      "type": "balcony_rail",
+      "label": "BALCONY RAIL",
+      "area_pixel": {
+        "x_min": 355,
+        "y_min": 740,
+        "x_max": 899,
+        "y_max": 775
+      },
+      "certainty": "확실",
+      "notes": "B행과 C행 사이에 난간 형태의 도형과 BALCONY RAIL 라벨이 명시되어 있음. 실제 높이·깊이·시야 차단 정도는 이미지에서 확인할 수 없음."
+    }
+  ]
+}

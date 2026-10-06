@@ -1,0 +1,110 @@
+{
+  "executedAt": "2026-10-01T14:24:48.217Z",
+  "sources": {
+    "baseImage": {
+      "path": "public/engine-plan.png",
+      "sha256": "cad9f58328a1482c833d82fc07bae1ef96791bc63089f07a089faedf523a5fec"
+    },
+    "fixture": {
+      "path": "public/engine-demo.json",
+      "sha256": "035e8c4ae795e5bf40a4016bdde9d967b474601195537e229fbe6db831f4bb35"
+    },
+    "baseVlm": {
+      "path": "scripts/experiments/vlm-spike/base-vlm-output.json",
+      "sha256": "777a03930fa9c6dcf46e7687fe97f00feb80e218012aa4717eeb4599268c0acc"
+    },
+    "railingImage": {
+      "path": "scripts/experiments/vlm-spike/railing-plan.png",
+      "sha256": "9be9073e9545a3116869e6f6c5be0444be35d86c5e7e2938e4455d42eed86260"
+    },
+    "railingVlm": {
+      "path": "scripts/experiments/vlm-spike/railing-vlm-output.json",
+      "sha256": "79a59b2c7be391d596769c73a2e85e1f612520e6a81cccb0f5684db9e0d2e621"
+    }
+  },
+  "baseImage": {
+    "width": 1000,
+    "height": 930
+  },
+  "railingImage": {
+    "width": 1254,
+    "height": 1254
+  },
+  "httpStatuses": {
+    "convert": 200,
+    "sightline": 200
+  },
+  "inputSeatCount": 20,
+  "modelSeatCount": 20,
+  "cameraCount": 20,
+  "viewerCameraMethodsVerified": 20,
+  "webglRenderVerified": false,
+  "calibration": {
+    "stageLeft": [
+      242,
+      110
+    ],
+    "stageRight": [
+      758,
+      110
+    ],
+    "stageWidthM": 8.6,
+    "audienceSide": 1
+  },
+  "metresPerPixel": 0.016666666666666666,
+  "c3Seat": {
+    "label": "C3",
+    "x": 0,
+    "z": 8.8,
+    "floor": 2.4,
+    "row": 2,
+    "section": "2층",
+    "price": 0
+  },
+  "c3Camera": {
+    "seatLabel": "C3",
+    "position": [
+      0,
+      3.5999999999999996,
+      8.8
+    ],
+    "target": [
+      0,
+      1.88,
+      -0.25
+    ],
+    "verticalFov": 60,
+    "eyeHeightM": 1.2
+  },
+  "sightline": {
+    "seatLabel": "C3",
+    "eyeHeightM": 1.2,
+    "verticalFov": 60,
+    "reviewStatus": "needs_site_review",
+    "sampleCount": 325,
+    "visible": 69,
+    "lowerVisible": 20,
+    "distance": "9.1",
+    "angle": 0,
+    "causes": {
+      "2층 전면 난간": 100
+    }
+  },
+  "basePixelsEqualFixture": true,
+  "railing": {
+    "seatCount": 20,
+    "obstacle": {
+      "type": "balcony_rail",
+      "label": "BALCONY RAIL",
+      "area_pixel": {
+        "x_min": 355,
+        "y_min": 740,
+        "x_max": 899,
+        "y_max": 775
+      },
+      "certainty": "확실",
+      "notes": "B행과 C행 사이에 난간 형태의 도형과 BALCONY RAIL 라벨이 명시되어 있음. 실제 높이·깊이·시야 차단 정도는 이미지에서 확인할 수 없음."
+    },
+    "converted": false
+  }
+}

@@ -1,0 +1,575 @@
+{
+  "engineVersion": "0.2.0",
+  "status": "needs_site_review",
+  "model": {
+    "schemaVersion": 2,
+    "name": "오름 아트홀 · 도면 변환",
+    "version": 1,
+    "updatedAt": "2026-10-01",
+    "seatSpacing": 1.35,
+    "rowSpacing": 1.65,
+    "rowRise": 0.65,
+    "balconyHeight": 2.4,
+    "railHeight": 1,
+    "stageWidth": 8.6,
+    "stageDepth": 3.6,
+    "stageOffset": 0,
+    "ticketUrl": "",
+    "labels": [
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "A5",
+      "B1",
+      "B2",
+      "B3",
+      "B4",
+      "B5",
+      "C1",
+      "C2",
+      "C3",
+      "C4",
+      "C5",
+      "D1",
+      "D2",
+      "D3",
+      "D4",
+      "D5"
+    ],
+    "seats": [
+      {
+        "label": "A1",
+        "x": -2.7,
+        "z": 5.5,
+        "floor": 0,
+        "row": 0,
+        "section": "1층",
+        "price": 0
+      },
+      {
+        "label": "A2",
+        "x": -1.35,
+        "z": 5.5,
+        "floor": 0,
+        "row": 0,
+        "section": "1층",
+        "price": 0
+      },
+      {
+        "label": "A3",
+        "x": 0,
+        "z": 5.5,
+        "floor": 0,
+        "row": 0,
+        "section": "1층",
+        "price": 0
+      },
+      {
+        "label": "A4",
+        "x": 1.35,
+        "z": 5.5,
+        "floor": 0,
+        "row": 0,
+        "section": "1층",
+        "price": 0
+      },
+      {
+        "label": "A5",
+        "x": 2.7,
+        "z": 5.5,
+        "floor": 0,
+        "row": 0,
+        "section": "1층",
+        "price": 0
+      },
+      {
+        "label": "B1",
+        "x": -2.7,
+        "z": 7.1499999999999995,
+        "floor": 0.24,
+        "row": 1,
+        "section": "1층",
+        "price": 0
+      },
+      {
+        "label": "B2",
+        "x": -1.35,
+        "z": 7.1499999999999995,
+        "floor": 0.24,
+        "row": 1,
+        "section": "1층",
+        "price": 0
+      },
+      {
+        "label": "B3",
+        "x": 0,
+        "z": 7.1499999999999995,
+        "floor": 0.24,
+        "row": 1,
+        "section": "1층",
+        "price": 0
+      },
+      {
+        "label": "B4",
+        "x": 1.35,
+        "z": 7.1499999999999995,
+        "floor": 0.24,
+        "row": 1,
+        "section": "1층",
+        "price": 0
+      },
+      {
+        "label": "B5",
+        "x": 2.7,
+        "z": 7.1499999999999995,
+        "floor": 0.24,
+        "row": 1,
+        "section": "1층",
+        "price": 0
+      },
+      {
+        "label": "C1",
+        "x": -2.7,
+        "z": 8.8,
+        "floor": 2.4,
+        "row": 2,
+        "section": "2층",
+        "price": 0
+      },
+      {
+        "label": "C2",
+        "x": -1.35,
+        "z": 8.8,
+        "floor": 2.4,
+        "row": 2,
+        "section": "2층",
+        "price": 0
+      },
+      {
+        "label": "C3",
+        "x": 0,
+        "z": 8.8,
+        "floor": 2.4,
+        "row": 2,
+        "section": "2층",
+        "price": 0
+      },
+      {
+        "label": "C4",
+        "x": 1.35,
+        "z": 8.8,
+        "floor": 2.4,
+        "row": 2,
+        "section": "2층",
+        "price": 0
+      },
+      {
+        "label": "C5",
+        "x": 2.7,
+        "z": 8.8,
+        "floor": 2.4,
+        "row": 2,
+        "section": "2층",
+        "price": 0
+      },
+      {
+        "label": "D1",
+        "x": -2.7,
+        "z": 10.45,
+        "floor": 3.05,
+        "row": 3,
+        "section": "2층",
+        "price": 0
+      },
+      {
+        "label": "D2",
+        "x": -1.35,
+        "z": 10.45,
+        "floor": 3.05,
+        "row": 3,
+        "section": "2층",
+        "price": 0
+      },
+      {
+        "label": "D3",
+        "x": 0,
+        "z": 10.45,
+        "floor": 3.05,
+        "row": 3,
+        "section": "2층",
+        "price": 0
+      },
+      {
+        "label": "D4",
+        "x": 1.35,
+        "z": 10.45,
+        "floor": 3.05,
+        "row": 3,
+        "section": "2층",
+        "price": 0
+      },
+      {
+        "label": "D5",
+        "x": 2.7,
+        "z": 10.45,
+        "floor": 3.05,
+        "row": 3,
+        "section": "2층",
+        "price": 0
+      }
+    ],
+    "obstacles": [
+      {
+        "id": "rail",
+        "name": "2층 전면 난간",
+        "position": [
+          0,
+          2.9,
+          8.0575
+        ],
+        "size": [
+          8.75,
+          1,
+          0.1
+        ],
+        "layout": "all"
+      },
+      {
+        "id": "tower",
+        "name": "촬영 카메라 타워",
+        "position": [
+          -1.95,
+          1.9,
+          1.5
+        ],
+        "size": [
+          1.05,
+          2.6,
+          0.65
+        ],
+        "layout": "concert"
+      }
+    ],
+    "stageHeight": 0.6,
+    "targetHeight": 2.4,
+    "provenance": {
+      "source": "calibrated-plan",
+      "reviewStatus": "needs_site_review",
+      "metresPerPixel": 0.016666666666666666
+    }
+  },
+  "cameras": [
+    {
+      "seatLabel": "A1",
+      "position": [
+        -2.7,
+        1.2,
+        5.5
+      ],
+      "target": [
+        0,
+        1.88,
+        -0.25
+      ],
+      "verticalFov": 60,
+      "eyeHeightM": 1.2
+    },
+    {
+      "seatLabel": "A2",
+      "position": [
+        -1.35,
+        1.2,
+        5.5
+      ],
+      "target": [
+        0,
+        1.88,
+        -0.25
+      ],
+      "verticalFov": 60,
+      "eyeHeightM": 1.2
+    },
+    {
+      "seatLabel": "A3",
+      "position": [
+        0,
+        1.2,
+        5.5
+      ],
+      "target": [
+        0,
+        1.88,
+        -0.25
+      ],
+      "verticalFov": 60,
+      "eyeHeightM": 1.2
+    },
+    {
+      "seatLabel": "A4",
+      "position": [
+        1.35,
+        1.2,
+        5.5
+      ],
+      "target": [
+        0,
+        1.88,
+        -0.25
+      ],
+      "verticalFov": 60,
+      "eyeHeightM": 1.2
+    },
+    {
+      "seatLabel": "A5",
+      "position": [
+        2.7,
+        1.2,
+        5.5
+      ],
+      "target": [
+        0,
+        1.88,
+        -0.25
+      ],
+      "verticalFov": 60,
+      "eyeHeightM": 1.2
+    },
+    {
+      "seatLabel": "B1",
+      "position": [
+        -2.7,
+        1.44,
+        7.1499999999999995
+      ],
+      "target": [
+        0,
+        1.88,
+        -0.25
+      ],
+      "verticalFov": 60,
+      "eyeHeightM": 1.2
+    },
+    {
+      "seatLabel": "B2",
+      "position": [
+        -1.35,
+        1.44,
+        7.1499999999999995
+      ],
+      "target": [
+        0,
+        1.88,
+        -0.25
+      ],
+      "verticalFov": 60,
+      "eyeHeightM": 1.2
+    },
+    {
+      "seatLabel": "B3",
+      "position": [
+        0,
+        1.44,
+        7.1499999999999995
+      ],
+      "target": [
+        0,
+        1.88,
+        -0.25
+      ],
+      "verticalFov": 60,
+      "eyeHeightM": 1.2
+    },
+    {
+      "seatLabel": "B4",
+      "position": [
+        1.35,
+        1.44,
+        7.1499999999999995
+      ],
+      "target": [
+        0,
+        1.88,
+        -0.25
+      ],
+      "verticalFov": 60,
+      "eyeHeightM": 1.2
+    },
+    {
+      "seatLabel": "B5",
+      "position": [
+        2.7,
+        1.44,
+        7.1499999999999995
+      ],
+      "target": [
+        0,
+        1.88,
+        -0.25
+      ],
+      "verticalFov": 60,
+      "eyeHeightM": 1.2
+    },
+    {
+      "seatLabel": "C1",
+      "position": [
+        -2.7,
+        3.5999999999999996,
+        8.8
+      ],
+      "target": [
+        0,
+        1.88,
+        -0.25
+      ],
+      "verticalFov": 60,
+      "eyeHeightM": 1.2
+    },
+    {
+      "seatLabel": "C2",
+      "position": [
+        -1.35,
+        3.5999999999999996,
+        8.8
+      ],
+      "target": [
+        0,
+        1.88,
+        -0.25
+      ],
+      "verticalFov": 60,
+      "eyeHeightM": 1.2
+    },
+    {
+      "seatLabel": "C3",
+      "position": [
+        0,
+        3.5999999999999996,
+        8.8
+      ],
+      "target": [
+        0,
+        1.88,
+        -0.25
+      ],
+      "verticalFov": 60,
+      "eyeHeightM": 1.2
+    },
+    {
+      "seatLabel": "C4",
+      "position": [
+        1.35,
+        3.5999999999999996,
+        8.8
+      ],
+      "target": [
+        0,
+        1.88,
+        -0.25
+      ],
+      "verticalFov": 60,
+      "eyeHeightM": 1.2
+    },
+    {
+      "seatLabel": "C5",
+      "position": [
+        2.7,
+        3.5999999999999996,
+        8.8
+      ],
+      "target": [
+        0,
+        1.88,
+        -0.25
+      ],
+      "verticalFov": 60,
+      "eyeHeightM": 1.2
+    },
+    {
+      "seatLabel": "D1",
+      "position": [
+        -2.7,
+        4.25,
+        10.45
+      ],
+      "target": [
+        0,
+        1.88,
+        -0.25
+      ],
+      "verticalFov": 60,
+      "eyeHeightM": 1.2
+    },
+    {
+      "seatLabel": "D2",
+      "position": [
+        -1.35,
+        4.25,
+        10.45
+      ],
+      "target": [
+        0,
+        1.88,
+        -0.25
+      ],
+      "verticalFov": 60,
+      "eyeHeightM": 1.2
+    },
+    {
+      "seatLabel": "D3",
+      "position": [
+        0,
+        4.25,
+        10.45
+      ],
+      "target": [
+        0,
+        1.88,
+        -0.25
+      ],
+      "verticalFov": 60,
+      "eyeHeightM": 1.2
+    },
+    {
+      "seatLabel": "D4",
+      "position": [
+        1.35,
+        4.25,
+        10.45
+      ],
+      "target": [
+        0,
+        1.88,
+        -0.25
+      ],
+      "verticalFov": 60,
+      "eyeHeightM": 1.2
+    },
+    {
+      "seatLabel": "D5",
+      "position": [
+        2.7,
+        4.25,
+        10.45
+      ],
+      "target": [
+        0,
+        1.88,
+        -0.25
+      ],
+      "verticalFov": 60,
+      "eyeHeightM": 1.2
+    }
+  ],
+  "report": {
+    "seatCount": 20,
+    "metresPerPixel": 0.016666666666666666,
+    "geometryBytes": 2411,
+    "warnings": [
+      "외관은 공통 스타일 자산입니다. 사진에서 복원한 실제 마감이 아닙니다.",
+      "원근 사진·축척 없는 예매 좌석도는 지원하지 않습니다.",
+      "난간·기둥·단차의 누락 여부를 현장에서 확인하세요. 앞사람과 연출 변화는 계산하지 않습니다.",
+      "가림 수치는 무대 전면 표본 비율이며 관람 만족도나 실제 시야 보증값이 아닙니다."
+    ]
+  }
+}
